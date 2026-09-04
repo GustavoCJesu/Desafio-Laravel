@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Employee;
-use App\Models\SessionTraining;
+use App\Models\UserRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendence_sessions', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(SessionTraining::class, 'session_treining_id')->constrained('session_trainings');
             $table->foreignIdFor(Employee::class, 'employee_id')->constrained('employees');
-            $table->string('employee_attendence');
-            $table->date('class_dt');
+            $table->foreignIdFor(UserRole::class, 'user_role_id')->constrained('user_roles');
+            $table->string('email');
+            $table->string('password');
+            $table->boolean('softdel');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attendence_sessions');
+        Schema::dropIfExists('users');
     }
 };

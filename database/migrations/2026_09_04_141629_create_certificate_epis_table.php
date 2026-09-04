@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Permission;
-use App\Models\UserRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('role_permissions', function (Blueprint $table) {
+        Schema::create('certificate_epis', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(UserRole::class, 'user_role_id')->constrained('user_roles');
-            $table->foreignIdFor(Permission::class, 'permission_id')->constrained('permissions');
             $table->timestamps();
         });
     }
@@ -26,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('role_permissions');
+        Schema::dropIfExists('certificate_epis');
     }
 };

@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Permission extends Model
 {
-    public function role_permission() : HasMany {
-        return $this->hasMany(Role_Permission::class, 'permission_id');
+    public function rolepermission(): HasMany
+    {
+        return $this->hasMany(RolePermission::class, 'permission_id');
     }
 }

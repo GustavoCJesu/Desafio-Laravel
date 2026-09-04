@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Employee;
+use App\Models\SessionTraining;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,16 +13,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('session__trainings', function (Blueprint $table) {
+        Schema::create('certificates', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Employee::class, 'instructor_id')->constrained('employees');
-            $table->string('title');
-            $table->string('description');
-            $table->dateTime('scheduled');
+            $table->foreignIdFor(Employee::class, 'employee_id')->constrained('employees');
+            $table->foreignIdFor(SessionTraining::class, 'session_training_id')->constrained('session_trainings');
+            $table->date('confirmed_at');
+            $table->date('expires_at');
             $table->string('status');
-            $table->integer('class_amount');
-            $table->integer('class_min');
-            $table->date('validity_dt');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('session__trainings');
+        Schema::dropIfExists('certificates');
     }
 };
