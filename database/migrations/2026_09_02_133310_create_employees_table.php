@@ -1,21 +1,19 @@
 <?php
 
-use App\Models\Company_role;
+use App\Models\CompanyRole;
 use App\Models\Sector;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Company_role::class, 'company_role_id')->constrained('company_roles');
+            $table->foreignIdFor(CompanyRole::class, 'company_role_id')->constrained('company_roles');
             $table->foreignIdFor(Sector::class, 'sector_id')->constrained('sectors');
             $table->string('registration');
             $table->string('cpf');
@@ -29,8 +27,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('employees');
     }
 };

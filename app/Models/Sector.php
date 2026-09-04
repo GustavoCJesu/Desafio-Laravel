@@ -9,7 +9,7 @@ class Sector extends Model
 {
 
 public function employee(): HasMany{
-    return $this->hasMany(Employee::class, 'secot_id');
+    return $this->hasMany(Employee::class, 'sector_id');
 }
 
 }

@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Permission;
-use App\Models\User_Role;
+use App\Models\Epi;
+use App\Models\SessionTraining;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('role__permissions', function (Blueprint $table) {
+        Schema::create('training_epis', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User_Role::class, 'user_role_id')->constrained('user__roles');
-            $table->foreignIdFor(Permission::class, 'permission_id')->constrained('permissions');
+            $table->foreignIdFor(SessionTraining::class, 'session_training_id');
+            $table->foreignIdFor(Epi::class, 'epi_id');
             $table->timestamps();
         });
     }
@@ -26,7 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('role__permissions');
+        Schema::dropIfExists('training_epis');
     }
 };
-
