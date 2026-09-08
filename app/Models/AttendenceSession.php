@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AttendenceSession extends Model
 {
+    protected $fillable = [
+        'employee_attendence',
+        'class_dt'
+    ];
+
     public function employee(): BelongsTo{
         return $this->belongsTo(Employee::class, 'employee_id');
     }
