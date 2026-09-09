@@ -44,7 +44,14 @@ table {
     overflow: hidden;
 }
 
-th, td{
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: white;
+}
+
+th{
     color: #fff;
     background-color: #485C81;
     padding: 10px;
@@ -54,20 +61,26 @@ th, td{
 td {
     background-color: #fff;
     color: #1E2636;
+    padding: 10px;
 }
+
 tr {
     width: 100%;
     text-align: center;
 }
 
-thead th {
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
-}
-
-.active-menu {
+.active-item-menu {
     background-color: #485C81;
 }
 
+.opened-menu {
+    left: 0px !important;
+}
+
+#menu {
+    width: 300px;
+    left: -300px;
+    z-index: 10;
+    overflow: hidden;
+    transition: all .5s;
+}

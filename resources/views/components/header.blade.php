@@ -1,10 +1,10 @@
 <div class="flex py-2 px-3 justify-between items-center bg-[#485C81] text-white rounded box-shadow-xl h-fit">
     <div class="flex items-center">
-        <button class="p-2 cursor-pointer hover:scale-120 transition flex">
+        <button class="p-2 cursor-pointer hover:scale-120 transition flex" id="open-menu-btn">
             <x-icon.icomenu />
         </button>
         <h1 class="text-4xl uppercase font-bold">
-            Titulo Sessão
+            {{ request()->routeIs('site.home') ? 'Relatorios' : ''}}
         </h1>
     </div>
     <div class="flex items-center bg-white box-shadow-xl rounded">

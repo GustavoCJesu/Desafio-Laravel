@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Employee::class, 'employee_id')->constrained('employees');
-            $table->foreignIdFor(UserRole::class, 'user_role_id')->constrained('user_roles');
+            $table->foreignIdFor(Employee::class, 'employee_id')->nullable()->constrained('employees');
+            $table->foreignIdFor(UserRole::class, 'user_role_id')->nullable()->constrained('user_roles');
             $table->string('email');
             $table->string('password');
-            $table->boolean('softdel');
+            $table->boolean('softdel')->default(false);
             $table->timestamps();
         });
     }

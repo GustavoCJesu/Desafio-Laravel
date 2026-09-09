@@ -1,9 +1,7 @@
 <x-layout>
-    <div class="rounded max-h-100 overflow-y-auto">
-        <table class="box-shadow-xl overflow-scroll rounded">
-
-            <thead>
-                <tr>
+    <div class="rounded max-h-100 overflow-y-auto flex-1">
+        <table class="box-shadow-xl rounded">
+                <tr class="sticky">
                     <th>
                         Titulo 1
                     </th>
@@ -20,7 +18,6 @@
                         Titulo 5
                     </th>
                 </tr>
-            </thead>
             <tr>
                 <td>
                     Teste 1
