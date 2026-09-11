@@ -1,5 +1,5 @@
 <x-layout>
-    <main class="bg-[#799BD9] text-white flex items-center flex-1 rounded">
+    <div class="bg-[#799BD9] text-white flex items-center flex-1 rounded">
         <div class="m-auto text-center flex flex-col gap-20 w-150">
             <h1 class="text-7xl text-white font-extrabold">
                 EPI Control
@@ -29,5 +29,5 @@
                 </form>
             </div>
         </div>
-    </main>
+    </div>
 </x-layout>

@@ -9,20 +9,21 @@
     @vite('resources/css/app.css')
 </head>
 
-<body class="bg-[#CBDDFF] relative flex flex-col gap-4 min-h-screen max-h-screen">
+<body class="bg-[#CBDDFF] relative flex flex-col gap-4 min-h-screen max-h-screen p-5">
 
     @auth
+    <x-menu />
         <header>
-            <x-menu />
             <x-header />
         </header>
     @endauth
 
-    <main class="flex flex-col gap-2 bg-white rounded flex-1">
+    <main class="flex flex-col gap-2 bg-white rounded-2xl flex-1 m-2 justify-center">
         {{ $slot }}
     </main>
     @auth
         <footer>
+
         </footer>
     @endauth
 
