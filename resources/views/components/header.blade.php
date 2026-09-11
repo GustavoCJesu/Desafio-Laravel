@@ -4,7 +4,7 @@
             <x-icon.icomenu />
         </button>
         <h1 class="text-4xl uppercase font-bold">
-            {{ request()->routeIs('site.home') ? 'Relatorios' : ''}}
+            {{ request()->routeIs('site.relatorios') ? 'Relatorios' : ''}}
         </h1>
     </div>
     <div class="flex items-center bg-white box-shadow-xl rounded">

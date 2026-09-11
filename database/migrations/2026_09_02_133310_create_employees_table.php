@@ -16,9 +16,10 @@ return new class extends Migration {
             $table->foreignIdFor(CompanyRole::class, 'company_role_id')->constrained('company_roles');
             $table->foreignIdFor(Sector::class, 'sector_id')->constrained('sectors');
             $table->string('registration');
+            $table->string('name');
             $table->string('cpf');
             $table->date('hire_date');
-            $table->date('departure_date');
+            $table->date('departure_date')->nullable();
             $table->string('status');
             $table->timestamps();
         });

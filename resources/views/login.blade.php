@@ -1,9 +1,4 @@
 <x-layout>
-    @if (isset($error))
-        <div class="self-center absolute bg-red-300 text-white p-10 m-4 rounded font-extrabold text-2xl">
-            {{ $error }}
-        </div>
-    @endif
     <main class="bg-[#799BD9] text-white flex items-center flex-1 rounded">
         <div class="m-auto text-center flex flex-col gap-20 w-150">
             <h1 class="text-7xl text-white font-extrabold">
