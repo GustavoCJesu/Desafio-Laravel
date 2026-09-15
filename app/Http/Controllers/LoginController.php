@@ -18,7 +18,8 @@ class LoginController extends Controller
 
         if(Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('site.relatorios'));
+            dd('Logado');
+            return redirect()->intended(route(''));
         }
 
         return back()->withErrors([
@@ -34,7 +35,7 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
 
-        return redirect(route('site.login'));
+        return redirect(route('login'));
 
     }
 }

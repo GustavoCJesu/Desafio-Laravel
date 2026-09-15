@@ -16,10 +16,6 @@
     scrollbar-width: none;
 }
 
-p, h1, h2, h3, h4, h5, span {
-    color: #1E2636
-}
-
 .box-shadow-xl {
     box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.25);
 }
