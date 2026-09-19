@@ -3,14 +3,15 @@
 namespace Database\Seeders;
 
 use App\Models\Employee;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class EmployeeSeeder extends Seeder {
+class EmployeeSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      */
-    public function run(): void {
+    public function run(): void
+    {
 
         Employee::create([
             'company_role_id' => 1,
