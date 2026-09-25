@@ -1,12 +1,6 @@
 <x-layout>
     <main class="flex-1 flex">
         <x-sidebar-menu />
-        @if ($errors->any())
-            @foreach ($errors->all() as $error)
-                {{ $error }}
-            @endforeach
-
-        @endif
         <div class="min-h-full w-full flex align-center">
             <div class="bg-white h-fit m-auto  rounded-sm overflow-hidden shadow-xl border border-[rgb(0,0,0,0.25)]">
                 <div class="rounded">
@@ -65,6 +59,12 @@
                                 <p class="{{ $employee->status === 'Ativo' ? 'text-green-500' : 'text-red-500' }}">
                                     {{ $employee->status }}
                                 </p>
+                            </div>
+                            <div class="flex gap-2">
+                                <label>
+                                    Data de contratação:
+                                </label>
+                                <input name="hire_date" type="text" value="{{ $employee->hire_date }}" />
                             </div>
 
                             <div class="flex justify-between w-full text-white">

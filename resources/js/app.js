@@ -54,6 +54,23 @@ function closeMessage(card) {
     card.classList.toggle('hidden');
 }
 
+function dismissToast(toast) {
+    toast.classList.add('toast-out');
+    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+}
+
+function initToasts() {
+    document.querySelectorAll('.toast').forEach((toast) => {
+        const duration = parseInt(toast.dataset.duration, 10) || 5000;
+        const timer = setTimeout(() => dismissToast(toast), duration);
+
+        toast.querySelector('.toast-close')?.addEventListener('click', () => {
+            clearTimeout(timer);
+            dismissToast(toast);
+        });
+    });
+}
+
 window.toggleModal = toggleModal;
 window.selectEmployee = selectEmployee;
 window.sendForm = sendForm;
@@ -61,4 +78,5 @@ window.closeMessage = closeMessage;
 
 applyCpfMask();
 validatePasswordConfirmation();
+initToasts();
 lucide.createIcons();

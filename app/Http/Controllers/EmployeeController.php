@@ -56,7 +56,7 @@ class EmployeeController extends Controller
         return view('editEmployee', compact('employee', 'sectors', 'roles', 'grouped', 'user_roles', 'users'));
     }
 
-    public function update(Request $request, int $id)
+    public function update(EmployeeRequest $request, int $id)
     {
 
         $employee = Employee::findOrFail($id);
@@ -70,14 +70,13 @@ class EmployeeController extends Controller
                 'company_role_id' => $request->company_role_id,
             ]);
             $employee->save();
-            return redirect(route('employees.index'))->with('Success', 'Editado com sucesso');
-        } catch (Exception $e) {
-            dd('Não Editou');
-            return redirect(route('employees.index'))->with('Error', 'Erro ao editar');
-            Log::error('Erro ao atualizar o funcionario.', $e->getMessage());
-        }
 
-        
+            return redirect(route('employees.viewUpdate', $id))->with('Success', 'Editado com sucesso');
+        } catch (Exception $e) {
+            Log::error('Erro ao atualizar o funcionario: '.$e->getMessage());
+
+            return redirect(route('employees.index'))->with('Error', 'Não foi possível atualizar o funcionário.');
+        }
     }
 
     public function change_status(Request $request)
@@ -111,17 +110,17 @@ class EmployeeController extends Controller
 
             return redirect()->back()->with('Success', 'Funcionário criado com sucesso!');
         } catch (Exception $e) {
-            dd($e->getMessage());
-            Log::error('Erro na criação do funcionário. '.$e->getMessage());
-            $message = $e->getMessage();
+            Log::error('Erro na criação do funcionário: '.$e->getMessage());
 
-            return redirect()->back()->with('Error', $message);
+            return redirect()->back()->with('Error', 'Não foi possível criar o funcionário.');
         }
-
     }
 
-    public function edit(Request $request)
+    public function showProfile(int $id): View
     {
-        dd($request);
+
+        $employee = Employee::findOrFail($id);
+
+        return view('profile-employee', compact('employee'));
     }
 }

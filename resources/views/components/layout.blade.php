@@ -14,6 +14,7 @@
 </head>
 
 <body class="flex flex-col min-h-screen relative">
+    <x-toast />
     {{ $slot }}
 </body>
 

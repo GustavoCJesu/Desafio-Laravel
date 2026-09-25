@@ -31,7 +31,6 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        // dd($request->all());
         try {
             User::create([
                 'employee_id' => intval($request->employee_id),
@@ -39,11 +38,15 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => $request->password,
             ]);
-        } catch (Exception $e) {
-            Log::error('Erro na criação do usuario.', $e->getMessage());
-        }
 
-        return redirect(route('employees.viewUpdate', ['id' => $request->employee_id]));
+            return redirect(route('employees.viewUpdate', ['id' => $request->employee_id]))
+                ->with('Success', 'Usuário criado com sucesso!');
+        } catch (Exception $e) {
+            Log::error('Erro na criação do usuario: '.$e->getMessage());
+
+            return redirect(route('employees.viewUpdate', ['id' => $request->employee_id]))
+                ->with('Error', 'Não foi possível criar o usuário.');
+        }
     }
 
     /**
@@ -70,17 +73,16 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         try {
-            // dd($request->all());
-
             $user->update([
-                'user_role_id' => intval($request->user_role_id)
+                'user_role_id' => intval($request->user_role_id),
             ]);
             $user->save();
 
-            return redirect()->back()->with('Success', 'Usuario editado com sucesso!');
-
+            return redirect()->back()->with('Success', 'Usuário editado com sucesso!');
         } catch (Exception $e) {
-            return redirect()->back()->with('Error', 'Não foipossivel editar o usuario.');
+            Log::error('Erro na edição do usuario: '.$e->getMessage());
+
+            return redirect()->back()->with('Error', 'Não foi possível editar o usuário.');
         }
     }
 

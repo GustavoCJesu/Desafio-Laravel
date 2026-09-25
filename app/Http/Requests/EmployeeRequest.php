@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Override;
 
 class EmployeeRequest extends FormRequest
@@ -25,7 +26,7 @@ class EmployeeRequest extends FormRequest
     {
         return [
             'name' => 'max:255|min:5|required|string',
-            'cpf' => 'max:14|unique:employees,cpf|required|string',
+            'cpf' => ['max:14', 'required', 'string', Rule::unique('employees', 'cpf')->ignore($this->route('id'))],
             'hire_date' => 'required',
             'company_role_id' => 'required|exists:company_roles,id',
             'sector_id' => 'required|exists:sectors,id',

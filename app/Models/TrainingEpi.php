@@ -7,11 +7,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TrainingEpi extends Model
 {
-    public function epi(): BelongsTo{
+    protected $fillable = [
+        'session_training_id',
+        'epi_id',
+    ];
+
+    public function epi(): BelongsTo
+    {
         return $this->belongsTo(Epi::class, 'epi_id');
     }
 
-    public function sessionTraining(): BelongsTo{
+    public function sessionTraining(): BelongsTo
+    {
         return $this->belongsTo(SessionTraining::class, 'session_training_id');
     }
 }

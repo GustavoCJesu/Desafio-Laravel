@@ -96,8 +96,10 @@
                                     </td>
                                     <td>
                                         <span>
-                                            <i class="text-gray-700 hover:scale-120 cursor-pointer transition"
-                                                data-lucide="eye"></i>
+                                            <a href="{{ route('employees.profile', $employee->id) }}">
+                                                <i class="text-gray-700 hover:scale-120 cursor-pointer transition"
+                                                    data-lucide="eye"></i>
+                                            </a>
                                         </span>
                                     </td>
                                 </tr>
@@ -122,40 +124,6 @@
                     </button>
                 </div>
             </div>
-            @if ($errors->any())
-                @foreach ($errors->all() as $error)
-                    <div onclick="closeMessage(this)" id="menssage"
-                        class="absolute top-10 left-1/2 z-5 -translate-x-1/2 m-auto">
-                        <p
-                            class="p-5 bg-red-200 text-red-800 text-bold w-fit cursor-pointer hover:scale-110 transition flex rounded">
-                            {{ $error }}
-                            <i data-lucide="X">
-                            </i>
-                        </p>
-                    </div>
-                @endforeach
-            @endif
-            @if (session('Success'))
-                <div onclick="closeMessage(this)" id="menssage"
-                    class="absolute top-10 left-1/2 z-5 -translate-x-1/2 m-auto">
-                    <p
-                        class="p-5 bg-green-200 text-green-800 text-bold w-fit cursor-pointer hover:scale-110 transition flex rounded">
-                        {{ session('Success') }}
-                        <i data-lucide="X">
-                        </i>
-                    </p>
-                </div>
-            @elseif (session('Error'))
-                <div onclick="closeMessage(this)" id="menssage"
-                    class="absolute top-10 left-1/2 z-5 -translate-x-1/2 m-auto">
-                    <p
-                        class="p-5 bg-red-200 text-red-800 text-bold w-fit cursor-pointer hover:scale-110 transition flex rounded">
-                        {{ session('Error') }}
-                        <i data-lucide="X">
-                        </i>
-                    </p>
-                </div>
-            @endif
         </div>
     </main>
 </x-layout>

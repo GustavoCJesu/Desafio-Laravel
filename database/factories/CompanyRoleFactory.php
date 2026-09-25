@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Sector;
+use App\Models\CompanyRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Sector>
+ * @extends Factory<CompanyRole>
  */
-class SectorFactory extends Factory
+class CompanyRoleFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,8 @@ class SectorFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->word(),
+            'title' => fake()->unique()->jobTitle(),
+            'status' => 'Ativo',
         ];
     }
 }

@@ -3,7 +3,7 @@
     <main class="min-h-screen bg-[#DCE7FA] flex items-center justify-center p-6">
 
         <section
-            class="w-full max-w-6xl min-h-[600px]
+            class="w-full max-w-6xl min-h-150
                    bg-white rounded-2xl shadow-lg
                    flex items-center overflow-hidden">
 
