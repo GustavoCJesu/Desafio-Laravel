@@ -22,7 +22,7 @@ class PositionsController extends Controller
         });
         $positions = UserRole::with('rolePermissions')->get();
 
-        return view('position', compact('positions', 'grouped'));
+        return view('pages.positions.index', compact('positions', 'grouped'));
     }
 
     /**

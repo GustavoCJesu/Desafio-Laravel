@@ -1,8 +1,8 @@
-<x-app-layout title="Cargos do sistema" subtitle="Funções de acesso e suas permissões" icon="briefcase">
+<x-layouts.app title="Cargos do sistema" subtitle="Funções de acesso e suas permissões" icon="briefcase">
     <x-slot:modals>
-        <x-create-position-modal :grouped="$grouped" />
+        <x-modals.position-create :grouped="$grouped" />
         @foreach ($positions as $position)
-            <x-edit-position-modal :position="$position" :grouped="$grouped" />
+            <x-modals.position-edit :position="$position" :grouped="$grouped" />
         @endforeach
     </x-slot:modals>
 
@@ -60,4 +60,4 @@
             <span class="text-sm font-medium">Novo cargo</span>
         </button>
     </div>
-</x-app-layout>
+</x-layouts.app>

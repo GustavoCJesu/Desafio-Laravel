@@ -1,6 +1,6 @@
 @props(['grouped'])
 
-<x-modal id="positionModal" title="Novo cargo" subtitle="Defina o nome e as permissões de acesso." icon="shield-plus" size="max-w-2xl">
+<x-ui.modal id="positionModal" title="Novo cargo" subtitle="Defina o nome e as permissões de acesso." icon="shield-plus" size="max-w-2xl">
     <form action="{{ route('position.create') }}" method="POST" id="positionForm">
         @csrf
         <div class="flex flex-col gap-4 px-6 py-5">
@@ -10,7 +10,7 @@
             </div>
             <div>
                 <p class="form-label">Permissões</p>
-                <x-permission-grid :grouped="$grouped" />
+                <x-ui.permission-grid :grouped="$grouped" />
             </div>
         </div>
         <div class="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4">
@@ -18,4 +18,4 @@
             <button type="submit" class="btn btn-primary"><i data-lucide="check"></i>Criar cargo</button>
         </div>
     </form>
-</x-modal>
+</x-ui.modal>

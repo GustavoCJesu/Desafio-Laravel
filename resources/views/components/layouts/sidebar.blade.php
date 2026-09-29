@@ -51,7 +51,7 @@
 
     {{-- Usuário logado --}}
     <div class="m-4 flex items-center gap-3 rounded-xl bg-white/10 p-3 ring-1 ring-white/10">
-        <x-avatar :name="$userName" class="size-10 bg-white text-sm" />
+        <x-ui.avatar :name="$userName" class="size-10 bg-white text-sm" />
         <div class="min-w-0 flex-1 leading-tight">
             <p class="truncate text-sm font-semibold">{{ $userName }}</p>
             <p class="truncate text-xs text-brand-200 uppercase">{{ $user->userRole->title ?? '' }}</p>

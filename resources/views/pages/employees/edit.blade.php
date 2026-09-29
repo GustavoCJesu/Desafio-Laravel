@@ -2,10 +2,10 @@
     $hasUser = $users->contains('employee_id', $employee->id);
 @endphp
 
-<x-app-layout title="Editar funcionário" :subtitle="$employee->name" icon="user-pen">
+<x-layouts.app title="Editar funcionário" :subtitle="$employee->name" icon="user-pen">
     @unless ($hasUser)
         <x-slot:modals>
-            <x-create-user-modal :employee="$employee" :user_roles="$user_roles" />
+            <x-modals.user-create :employee="$employee" :user_roles="$user_roles" />
         </x-slot:modals>
     @endunless
 
@@ -25,7 +25,7 @@
             @method('PUT')
             <div class="card-header">
                 <div class="flex items-center gap-3">
-                    <x-avatar :name="$employee->name" class="size-10 text-sm" />
+                    <x-ui.avatar :name="$employee->name" class="size-10 text-sm" />
                     <div>
                         <h2 class="card-title">Cadastro do funcionário</h2>
                         <p class="text-xs text-slate-500">Matrícula {{ $employee->registration }}</p>
@@ -121,7 +121,7 @@
 
                     <div>
                         <p class="form-label">Permissões da função</p>
-                        <x-permission-grid :grouped="$grouped" readonly
+                        <x-ui.permission-grid :grouped="$grouped" readonly
                             :selected="$employee->user->userRole->rolePermissions->pluck('permission_id')->all()" />
                     </div>
                 </div>
@@ -145,4 +145,4 @@
             </div>
         @endif
     </div>
-</x-app-layout>
+</x-layouts.app>

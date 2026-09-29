@@ -3,9 +3,9 @@
     $activeCount = $employees->where('status', 'Ativo')->count();
 @endphp
 
-<x-app-layout title="Funcionários" subtitle="Gerencie o quadro de colaboradores da empresa" icon="users">
+<x-layouts.app title="Funcionários" subtitle="Gerencie o quadro de colaboradores da empresa" icon="users">
     <x-slot:modals>
-        <x-create-employee-modal :roles="$roles" :sectors="$sectors" />
+        <x-modals.employee-create :roles="$roles" :sectors="$sectors" />
     </x-slot:modals>
 
     <x-slot:actions>
@@ -16,9 +16,9 @@
 
     <div class="flex flex-col gap-6">
         <div class="grid gap-4 sm:grid-cols-3">
-            <x-stat-card label="Total listado" :value="$employees->count()" icon="users" />
-            <x-stat-card label="Ativos" :value="$activeCount" icon="user-check" tone="success" />
-            <x-stat-card label="Inativos" :value="$employees->count() - $activeCount" icon="user-x" tone="danger" />
+            <x-ui.stat-card label="Total listado" :value="$employees->count()" icon="users" />
+            <x-ui.stat-card label="Ativos" :value="$activeCount" icon="user-check" tone="success" />
+            <x-ui.stat-card label="Inativos" :value="$employees->count() - $activeCount" icon="user-x" tone="danger" />
         </div>
 
         <div class="card overflow-hidden">
@@ -79,7 +79,7 @@
                                 </td>
                                 <td class="whitespace-normal">
                                     <div class="flex items-center gap-3">
-                                        <x-avatar :name="$employee->name" class="size-9 text-xs" />
+                                        <x-ui.avatar :name="$employee->name" class="size-9 text-xs" />
                                         <div class="min-w-0">
                                             <p class="font-medium text-slate-900">{{ $employee->name }}</p>
                                             <p class="text-xs text-slate-500">
@@ -153,4 +153,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-layouts.app>

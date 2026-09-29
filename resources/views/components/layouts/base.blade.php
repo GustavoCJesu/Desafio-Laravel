@@ -13,7 +13,7 @@
 </head>
 
 <body {{ $attributes->merge(['class' => 'flex flex-col min-h-screen relative']) }}>
-    <x-toast />
+    <x-ui.toast />
     {{ $slot }}
 </body>
 

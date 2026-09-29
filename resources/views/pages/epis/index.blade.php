@@ -2,10 +2,10 @@
     $activeEpis = $epis->where('status', 'Ativo')->count();
 @endphp
 
-<x-app-layout title="EPIs" subtitle="Equipamentos de proteção individual cadastrados" icon="hard-hat">
+<x-layouts.app title="EPIs" subtitle="Equipamentos de proteção individual cadastrados" icon="hard-hat">
     <x-slot:modals>
-        <x-create-epi-modal :categories="$categories" />
-        <x-edit-epi-modal :categories="$categories" />
+        <x-modals.epi-create :categories="$categories" />
+        <x-modals.epi-edit :categories="$categories" />
     </x-slot:modals>
 
     <x-slot:actions>
@@ -16,10 +16,10 @@
 
     <div class="flex flex-col gap-6">
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <x-stat-card label="EPIs cadastrados" :value="$epis->count()" icon="hard-hat" />
-            <x-stat-card label="Ativos" :value="$activeEpis" icon="shield-check" tone="success" />
-            <x-stat-card label="Inativos" :value="$epis->count() - $activeEpis" icon="shield-off" tone="danger" />
-            <x-stat-card label="Categorias" :value="$categories->count()" icon="layers" tone="accent" />
+            <x-ui.stat-card label="EPIs cadastrados" :value="$epis->count()" icon="hard-hat" />
+            <x-ui.stat-card label="Ativos" :value="$activeEpis" icon="shield-check" tone="success" />
+            <x-ui.stat-card label="Inativos" :value="$epis->count() - $activeEpis" icon="shield-off" tone="danger" />
+            <x-ui.stat-card label="Categorias" :value="$categories->count()" icon="layers" tone="accent" />
         </div>
 
         <div class="card overflow-hidden">
@@ -93,4 +93,4 @@
             }
         }
     </script>
-</x-app-layout>
+</x-layouts.app>

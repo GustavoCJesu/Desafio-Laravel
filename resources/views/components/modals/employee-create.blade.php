@@ -1,6 +1,6 @@
 @props(['roles', 'sectors', 'employee' => null])
 
-<x-modal id="modal" title="Novo funcionário" subtitle="A matrícula é gerada automaticamente." icon="user-plus">
+<x-ui.modal id="modal" title="Novo funcionário" subtitle="A matrícula é gerada automaticamente." icon="user-plus">
     <form method="POST" action="{{ route('employees.create') }}">
         @csrf
         <div class="flex flex-col gap-4 px-6 py-5">
@@ -42,4 +42,4 @@
             <button type="submit" class="btn btn-primary"><i data-lucide="check"></i>Criar funcionário</button>
         </div>
     </form>
-</x-modal>
+</x-ui.modal>

@@ -1,8 +1,8 @@
 @props(['categories'])
 
-<x-modal id="editepimodal" title="Editar EPI" subtitle="Atualize os dados do equipamento." icon="pencil">
-    <form data-action="{{ route('epi.update', ['id' => '__ID__']) }}" id="editEpi"
-        action="{{ route('epi.update', ['id' => '__ID__']) }}" method="POST">
+<x-ui.modal id="editepimodal" title="Editar EPI" subtitle="Atualize os dados do equipamento." icon="pencil">
+    <form data-action="{{ route('epi.update', ['epi' => '__ID__']) }}" id="editEpi"
+        action="{{ route('epi.update', ['epi' => '__ID__']) }}" method="POST">
         @csrf
         @method('PUT')
         <div class="grid gap-4 px-6 py-5 sm:grid-cols-2">
@@ -35,4 +35,4 @@
             <button type="submit" class="btn btn-primary"><i data-lucide="save"></i>Salvar</button>
         </div>
     </form>
-</x-modal>
+</x-ui.modal>

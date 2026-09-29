@@ -36,7 +36,7 @@
     $totalCertificates = array_sum(array_column($certificateStatus, 'value'));
 @endphp
 
-<x-app-layout title="Relatórios" subtitle="Indicadores de pessoas, treinamentos e EPIs" icon="bar-chart-3">
+<x-layouts.app title="Relatórios" subtitle="Indicadores de pessoas, treinamentos e EPIs" icon="bar-chart-3">
     <x-slot:actions>
         <button type="button" onclick="window.print()" class="btn btn-secondary no-print">
             <i data-lucide="printer"></i><span class="hidden sm:inline">Imprimir</span>
@@ -65,10 +65,10 @@
 
         {{-- Indicadores principais --}}
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <x-stat-card label="Funcionários" value="128" icon="users" hint="6 setores" />
-            <x-stat-card label="Taxa de treinamento" value="91%" icon="graduation-cap" tone="success" hint="117 de 128 treinados" />
-            <x-stat-card label="Horas de treinamento" value="1.240" icon="clock" tone="accent" hint="Últimos 12 meses" />
-            <x-stat-card label="EPIs entregues" value="587" icon="hard-hat" tone="warning" hint="Últimos 12 meses" />
+            <x-ui.stat-card label="Funcionários" value="128" icon="users" hint="6 setores" />
+            <x-ui.stat-card label="Taxa de treinamento" value="91%" icon="graduation-cap" tone="success" hint="117 de 128 treinados" />
+            <x-ui.stat-card label="Horas de treinamento" value="1.240" icon="clock" tone="accent" hint="Últimos 12 meses" />
+            <x-ui.stat-card label="EPIs entregues" value="587" icon="hard-hat" tone="warning" hint="Últimos 12 meses" />
         </div>
 
         <div class="grid gap-6 xl:grid-cols-2">
@@ -216,4 +216,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-layouts.app>

@@ -1,4 +1,4 @@
-<x-layout title="Início" class="bg-brand-50">
+<x-layouts.base title="Início" class="bg-brand-50">
     <div class="relative flex min-h-screen flex-col overflow-hidden">
         {{-- Decoração de fundo --}}
         <div class="pointer-events-none absolute -top-40 -right-40 size-144 rounded-full bg-accent-500/10 blur-3xl"></div>
@@ -88,4 +88,4 @@
             </div>
         </main>
     </div>
-</x-layout>
+</x-layouts.base>

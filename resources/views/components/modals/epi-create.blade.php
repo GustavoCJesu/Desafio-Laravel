@@ -1,6 +1,6 @@
 @props(['categories'])
 
-<x-modal id="epimodal" title="Novo EPI" subtitle="Cadastre um equipamento pelo número do CA." icon="hard-hat">
+<x-ui.modal id="epimodal" title="Novo EPI" subtitle="Cadastre um equipamento pelo número do CA." icon="hard-hat">
     <form action="{{ route('epi.create') }}" method="POST" id="epiform">
         @csrf
         <div class="grid gap-4 px-6 py-5 sm:grid-cols-2">
@@ -33,4 +33,4 @@
             <button type="submit" class="btn btn-primary"><i data-lucide="check"></i>Criar EPI</button>
         </div>
     </form>
-</x-modal>
+</x-ui.modal>

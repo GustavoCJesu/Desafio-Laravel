@@ -15,9 +15,9 @@
     $counts = array_count_values(array_column($certificates, 'status'));
 @endphp
 
-<x-app-layout title="Certificados" subtitle="Certificados emitidos e controle de validade" icon="award">
+<x-layouts.app title="Certificados" subtitle="Certificados emitidos e controle de validade" icon="award">
     <x-slot:modals>
-        <x-modal id="certificateModal" title="Pré-visualização" subtitle="Certificado de conclusão" icon="award" size="max-w-3xl">
+        <x-ui.modal id="certificateModal" title="Pré-visualização" subtitle="Certificado de conclusão" icon="award" size="max-w-3xl">
             <div class="bg-slate-100 p-4 sm:p-6">
                 <div id="certificate-print" class="relative overflow-hidden rounded-lg bg-white p-8 text-center shadow-md ring-8 ring-inset ring-brand-100 sm:p-12">
                     <div class="bg-gradient-primary absolute inset-x-0 top-0 h-2"></div>
@@ -50,7 +50,7 @@
                     <i data-lucide="printer"></i>Imprimir
                 </button>
             </div>
-        </x-modal>
+        </x-ui.modal>
     </x-slot:modals>
 
     <x-slot:actions>
@@ -61,9 +61,9 @@
 
     <div class="flex flex-col gap-6">
         <div class="grid gap-4 sm:grid-cols-3">
-            <x-stat-card label="Válidos" :value="$counts['Válido'] ?? 0" icon="badge-check" tone="success" />
-            <x-stat-card label="A vencer (60 dias)" :value="$counts['A vencer'] ?? 0" icon="alarm-clock" tone="warning" />
-            <x-stat-card label="Vencidos" :value="$counts['Vencido'] ?? 0" icon="badge-x" tone="danger" />
+            <x-ui.stat-card label="Válidos" :value="$counts['Válido'] ?? 0" icon="badge-check" tone="success" />
+            <x-ui.stat-card label="A vencer (60 dias)" :value="$counts['A vencer'] ?? 0" icon="alarm-clock" tone="warning" />
+            <x-ui.stat-card label="Vencidos" :value="$counts['Vencido'] ?? 0" icon="badge-x" tone="danger" />
         </div>
 
         <div class="card overflow-hidden">
@@ -101,7 +101,7 @@
                                 <td class="font-mono text-xs text-slate-500">{{ $certificate['code'] }}</td>
                                 <td>
                                     <div class="flex items-center gap-3">
-                                        <x-avatar :name="$certificate['employee']" class="size-9 text-xs" />
+                                        <x-ui.avatar :name="$certificate['employee']" class="size-9 text-xs" />
                                         <div>
                                             <p class="font-medium text-slate-900">{{ $certificate['employee'] }}</p>
                                             <p class="font-mono text-xs text-slate-500">{{ $certificate['registration'] }}</p>
@@ -174,4 +174,4 @@
             setTimeout(() => printWindow.print(), 300);
         }
     </script>
-</x-app-layout>
+</x-layouts.app>

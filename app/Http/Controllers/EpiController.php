@@ -18,10 +18,11 @@ class EpiController extends Controller
         $epis = Epi::with('category')->get();
         $categories = Category::all();
 
-        return view('epiView', compact('epis', 'categories'));
+        return view('pages.epis.index', compact('epis', 'categories'));
     }
 
-    public function store(Request $request){    
+    public function store(Request $request)
+    {
         try {
             Epi::create([
                 'name' => $request->name,
@@ -31,16 +32,16 @@ class EpiController extends Controller
             ]);
 
             return redirect(route('epi.index'))->with('Success', 'EPI criado com sucesso!');
-        }catch(Exception $e){
+        } catch (Exception $e) {
             // Log::error('Error', 'Erro ao criar o EPI'.$e->getMessage());
-            return redirect(route('epi.index'))->with('Error', 'Não foi possivel criar o EPI!'. $e->getMessage());; 
+            return redirect(route('epi.index'))->with('Error', 'Não foi possivel criar o EPI!'.$e->getMessage());
         }
 
     }
 
-    public function show(Epi $id): JsonResponse
+    public function show(Epi $epi): JsonResponse
     {
-        return response()->json($id);
+        return response()->json($epi);
     }
 
     public function update(Request $request, Epi $epi)

@@ -1,10 +1,10 @@
 @props(['title' => null, 'subtitle' => null, 'icon' => null])
 
-<x-layout :title="$title">
+<x-layouts.base :title="$title">
     {{ $modals ?? '' }}
 
     <div class="flex h-screen overflow-hidden">
-        <x-sidebar-menu />
+        <x-layouts.sidebar />
 
         {{-- Fundo escuro do menu no mobile --}}
         <div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-slate-900/50 lg:hidden"
@@ -43,4 +43,4 @@
             </main>
         </div>
     </div>
-</x-layout>
+</x-layouts.base>

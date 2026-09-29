@@ -1,4 +1,4 @@
-<x-layout title="Entrar" class="bg-white">
+<x-layouts.base title="Entrar" class="bg-white">
     <main class="grid min-h-screen lg:grid-cols-2">
         {{-- Painel da marca --}}
         <section class="bg-gradient-sidebar relative hidden flex-col justify-between overflow-hidden p-12 text-white lg:flex">
@@ -69,4 +69,4 @@
             </div>
         </section>
     </main>
-</x-layout>
+</x-layouts.base>

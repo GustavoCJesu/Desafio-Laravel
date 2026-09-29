@@ -8,7 +8,7 @@
     ];
 @endphp
 
-<x-app-layout title="Perfil do funcionário" :subtitle="$employee->name" icon="id-card">
+<x-layouts.app title="Perfil do funcionário" :subtitle="$employee->name" icon="id-card">
     <x-slot:actions>
         <a href="{{ route('employees.index') }}" class="btn btn-secondary">
             <i data-lucide="arrow-left"></i><span class="hidden sm:inline">Voltar</span>
@@ -23,7 +23,7 @@
         <div class="card overflow-hidden">
             <div class="bg-gradient-primary h-28"></div>
             <div class="flex flex-col gap-4 px-6 pb-6 sm:flex-row sm:items-end">
-                <x-avatar :name="$employee->name" class="-mt-12 size-24 border-4 border-white text-3xl shadow-md" />
+                <x-ui.avatar :name="$employee->name" class="-mt-12 size-24 border-4 border-white text-3xl shadow-md" />
                 <div class="flex-1">
                     <h2 class="text-xl font-bold text-slate-900">{{ $employee->name }}</h2>
                     <p class="text-sm text-slate-500">
@@ -94,4 +94,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-layouts.app>

@@ -1,6 +1,6 @@
-<x-layout>
+<x-layouts.base>
     <main class="flex-1 flex">
-        <x-sidebar-menu />
+        <x-layouts.sidebar />
         <div class="min-h-full w-full flex align-center gap-4 justify-center">
             <div class="bg-white h-fit m-auto rounded-sm overflow-hidden shadow-xl border border-[rgb(0,0,0,0.25)]">
                 <div class="rounded">
@@ -142,4 +142,4 @@
             </div>
         </div>
     </main>
-</x-layout>
+</x-layouts.base>

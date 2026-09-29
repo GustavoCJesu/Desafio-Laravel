@@ -1,6 +1,6 @@
 @props(['employee' => null, 'user_roles'])
 
-<x-modal id="userModal" title="Novo usuário" subtitle="Libere o acesso deste funcionário ao sistema." icon="key-round">
+<x-ui.modal id="userModal" title="Novo usuário" subtitle="Libere o acesso deste funcionário ao sistema." icon="key-round">
     <form method="POST" action="{{ route('user.create') }}">
         @csrf
         <input name="employee_id" type="hidden" value="{{ $employee->id }}">
@@ -37,4 +37,4 @@
             <button type="submit" class="btn btn-primary"><i data-lucide="check"></i>Criar usuário</button>
         </div>
     </form>
-</x-modal>
+</x-ui.modal>

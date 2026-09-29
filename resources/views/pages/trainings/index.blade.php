@@ -22,10 +22,10 @@
     ];
 @endphp
 
-<x-app-layout title="Aulas" subtitle="Treinamentos e reciclagens das Normas Regulamentadoras" icon="graduation-cap">
+<x-layouts.app title="Aulas" subtitle="Treinamentos e reciclagens das Normas Regulamentadoras" icon="graduation-cap">
     <x-slot:modals>
         {{-- Novo agendamento (protótipo visual) --}}
-        <x-modal id="newTrainingModal" title="Agendar aula" subtitle="Preencha os dados do treinamento." icon="calendar-plus" size="max-w-2xl">
+        <x-ui.modal id="newTrainingModal" title="Agendar aula" subtitle="Preencha os dados do treinamento." icon="calendar-plus" size="max-w-2xl">
             <form onsubmit="event.preventDefault(); toggleModal('newTrainingModal');">
                 <div class="grid gap-4 px-6 py-5 sm:grid-cols-2">
                     <div>
@@ -71,15 +71,15 @@
                     <button type="submit" class="btn btn-primary"><i data-lucide="check"></i>Agendar</button>
                 </div>
             </form>
-        </x-modal>
+        </x-ui.modal>
 
         {{-- Lista de presença (protótipo visual) --}}
-        <x-modal id="attendanceModal" title="Lista de presença" subtitle="NR-35 Trabalho em Altura · 02/10/2026" icon="clipboard-check" size="max-w-xl">
+        <x-ui.modal id="attendanceModal" title="Lista de presença" subtitle="NR-35 Trabalho em Altura · 02/10/2026" icon="clipboard-check" size="max-w-xl">
             <ul class="max-h-96 divide-y divide-slate-100 overflow-y-auto">
                 @foreach ($attendees as $attendee)
                     <li>
                         <label class="flex cursor-pointer items-center gap-3 px-6 py-3 hover:bg-slate-50">
-                            <x-avatar :name="$attendee['name']" class="size-9 text-xs" />
+                            <x-ui.avatar :name="$attendee['name']" class="size-9 text-xs" />
                             <div class="flex-1">
                                 <p class="text-sm font-medium text-slate-900">{{ $attendee['name'] }}</p>
                                 <p class="font-mono text-xs text-slate-500">{{ $attendee['registration'] }}</p>
@@ -98,7 +98,7 @@
                     </button>
                 </div>
             </div>
-        </x-modal>
+        </x-ui.modal>
     </x-slot:modals>
 
     <x-slot:actions>
@@ -109,10 +109,10 @@
 
     <div class="flex flex-col gap-6">
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <x-stat-card label="Agendadas" value="4" icon="calendar-clock" tone="accent" />
-            <x-stat-card label="Concluídas no ano" value="38" icon="check-circle-2" tone="success" />
-            <x-stat-card label="Horas de treinamento" value="1.240" icon="clock" />
-            <x-stat-card label="Taxa de presença" value="92%" icon="user-check" tone="warning" />
+            <x-ui.stat-card label="Agendadas" value="4" icon="calendar-clock" tone="accent" />
+            <x-ui.stat-card label="Concluídas no ano" value="38" icon="check-circle-2" tone="success" />
+            <x-ui.stat-card label="Horas de treinamento" value="1.240" icon="clock" />
+            <x-ui.stat-card label="Taxa de presença" value="92%" icon="user-check" tone="warning" />
         </div>
 
         {{-- Filtros por status --}}
@@ -231,4 +231,4 @@
             applyTrainingFilters();
         }
     </script>
-</x-app-layout>
+</x-layouts.app>

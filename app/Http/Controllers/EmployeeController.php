@@ -35,10 +35,10 @@ class EmployeeController extends Controller
         $sectors = Sector::whereHas('employee')->get();
         $roles = CompanyRole::whereHas('employee')->get();
 
-        return view('employee', compact('employees', 'search', 'sectors', 'roles'));
+        return view('pages.employees.index', compact('employees', 'search', 'sectors', 'roles'));
     }
 
-    public function editView(int $id): View
+    public function edit(int $id): View
     {
 
         $employee = Employee::where('id', $id)->first();
@@ -53,7 +53,7 @@ class EmployeeController extends Controller
         $users = User::all();
         // dd($grouped);
 
-        return view('editEmployee', compact('employee', 'sectors', 'roles', 'grouped', 'user_roles', 'users'));
+        return view('pages.employees.edit', compact('employee', 'sectors', 'roles', 'grouped', 'user_roles', 'users'));
     }
 
     public function update(EmployeeRequest $request, int $id)
@@ -79,7 +79,7 @@ class EmployeeController extends Controller
         }
     }
 
-    public function change_status(Request $request)
+    public function toggleStatus(Request $request)
     {
         $employee = Employee::find($request->selected_employees);
 
@@ -116,11 +116,11 @@ class EmployeeController extends Controller
         }
     }
 
-    public function showProfile(int $id): View
+    public function show(int $id): View
     {
 
         $employee = Employee::findOrFail($id);
 
-        return view('profile-employee', compact('employee'));
+        return view('pages.employees.show', compact('employee'));
     }
 }

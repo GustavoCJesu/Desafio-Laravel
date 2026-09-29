@@ -40,7 +40,7 @@
     ];
 @endphp
 
-<x-app-layout title="Painel" subtitle="Resumo geral de pessoas, treinamentos e segurança" icon="layout-dashboard">
+<x-layouts.app title="Painel" subtitle="Resumo geral de pessoas, treinamentos e segurança" icon="layout-dashboard">
     <x-slot:actions>
         <a href="{{ route('report.index') }}" class="btn btn-secondary">
             <i data-lucide="bar-chart-3"></i><span class="hidden sm:inline">Relatórios</span>
@@ -67,7 +67,7 @@
         {{-- Indicadores --}}
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ($stats as $stat)
-                <x-stat-card :label="$stat['label']" :value="$stat['value']" :icon="$stat['icon']" :tone="$stat['tone']" :hint="$stat['hint']" />
+                <x-ui.stat-card :label="$stat['label']" :value="$stat['value']" :icon="$stat['icon']" :tone="$stat['tone']" :hint="$stat['hint']" />
             @endforeach
         </div>
 
@@ -158,7 +158,7 @@
                 <ul class="divide-y divide-slate-100">
                     @foreach ($expiring as $item)
                         <li class="flex items-center gap-3 px-5 py-3">
-                            <x-avatar :name="$item['name']" class="size-9 text-xs" />
+                            <x-ui.avatar :name="$item['name']" class="size-9 text-xs" />
                             <div class="min-w-0 flex-1">
                                 <p class="truncate text-sm font-medium text-slate-900">{{ $item['name'] }}</p>
                                 <p class="truncate text-xs text-slate-500">{{ $item['item'] }}</p>
@@ -172,4 +172,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-layouts.app>
