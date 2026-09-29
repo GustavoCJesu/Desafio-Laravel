@@ -47,9 +47,9 @@
                         class="btn btn-secondary btn-sm flex-1">
                         <i data-lucide="pencil"></i>Editar
                     </button>
-                    <button type="button" class="btn btn-danger-soft btn-sm" title="Excluir">
+                    <a href="{{ route('position.delete', $id = $position->id)}}" type="button" class="btn btn-danger-soft btn-sm" title="Excluir">
                         <i data-lucide="trash-2"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
         @endforeach

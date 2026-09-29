@@ -111,6 +111,14 @@ class PositionsController extends Controller
      */
     public function destroy(UserRole $userRole)
     {
-        //
+        $role = UserRole::findOrFail($userRole->id);
+    
+        if($role->user()->exists()){
+            return redirect()->back()->with('Error', 'Não é possivel deletar cargos que tem pessoas utilizando.');
+        }else{
+            $role->rolePermissions()->detach(); 
+            $role->delete();
+            return redirect()->back()->with('Success', 'Cargo deletado com sucesso');
+        }
     }
 }

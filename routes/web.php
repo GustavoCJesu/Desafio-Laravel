@@ -31,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/positions', [PositionsController::class, 'index'])->name('position.index');
     Route::post('/position/create', [PositionsController::class, 'store'])->name('position.create');
     Route::put('/position/update/{userRole}', [PositionsController::class, 'update'])->name('position.update');
+    Route::get('/position/delete/{userRole}', [PositionsController::class, 'destroy'])->name('position.delete');
+
 
     Route::get('/epis', [EpiController::class, 'index'])->name('epi.index');
     Route::get('/epis/{epi}', [EpiController::class, 'show'])->name('epi.show');
