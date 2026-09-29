@@ -1,66 +1,63 @@
-<x-layout>
-    <x-create-position-modal :grouped='$grouped' />
+<x-app-layout title="Cargos do sistema" subtitle="Funções de acesso e suas permissões" icon="briefcase">
+    <x-slot:modals>
+        <x-create-position-modal :grouped="$grouped" />
+        @foreach ($positions as $position)
+            <x-edit-position-modal :position="$position" :grouped="$grouped" />
+        @endforeach
+    </x-slot:modals>
 
-    @foreach ($positions as $position)
-        <x-edit-position-modal :position="$position" :grouped="$grouped" />
-    @endforeach
+    <x-slot:actions>
+        <button type="button" onclick="toggleModal('positionModal')" class="btn btn-primary">
+            <i data-lucide="plus"></i><span class="hidden sm:inline">Criar novo cargo</span>
+        </button>
+    </x-slot:actions>
 
-    {{-- <div class="absolute top-0 left-0 w-screen h-screen bg-[rgb(0,0,0,0.6)] flex justify-center items-center">
-        <div class="bg-white p-2">
-            <div>
-                Editor de Cargo
-            </div>
-            <div>
-
-            </div>
-        </div>
-    </div> --}}
-
-    <main class="flex flex-1">
-        <x-sidebar-menu />
-        <div class="flex-1 p-4 flex flex-col justify-between">
-            <div>
-                <div class="bg-gradient-primary uppercase font-bold text-2xl text-white px-6 py-4 rounded-md">
-                    Cargos do sistema
-                </div>
-                    <div class="grid grid-cols-4 p-4 gap-4">
-                        @foreach ($positions as $position)
-                            <div
-                                class="w-full h-fit transition rounded overflow-hidden cursor-pointer border-[rgb(0,0,0,0.25)] border shadow-md">
-                                <div>
-                                    <p class="uppercase text-xl bg-gradient-primary px-2 py-1 text-white font-bold">
-                                        {{ $position->title }}
-                                    </p>
-                                    <div class="p-3">
-                                        <p>
-                                            Criado em: {{ $position->created_at->format('d-m-Y') }}
-                                        </p>
-                                        <p>
-                                            Status: {{ $position->status }}
-                                        </p>
-                                        <div class="flex justify-between mt-5">
-                                            <button type="button" onclick="toggleModal('editPositionModal-{{ $position->id }}')"
-                                                class="bg-gradient-primary text-white p-1 rounded hover:scale-105 cursor-pointer transition">
-                                                Editar
-                                            </button>
-                                            <button
-                                                class="bg-gradient-errors p-1 rounded text-white hover:scale-105 cursor-pointer transition">
-                                                Excluir
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        @foreach ($positions as $position)
+            @php
+                $permissionCount = $position->rolePermissions->count();
+            @endphp
+            <div class="card group flex flex-col transition hover:-translate-y-0.5 hover:shadow-elevated">
+                <div class="flex items-start gap-3 p-5">
+                    <div class="bg-gradient-primary flex size-11 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
+                        <i data-lucide="shield" class="size-5"></i>
                     </div>
-            </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="truncate font-semibold text-slate-900 uppercase">{{ $position->title }}</h3>
+                        <p class="text-xs text-slate-500">Criado em {{ $position->created_at?->format('d/m/Y') }}</p>
+                    </div>
+                    <span class="badge {{ $position->status === 'Ativo' ? 'badge-success' : 'badge-neutral' }}">
+                        {{ $position->status }}
+                    </span>
+                </div>
 
-            <div class="flex ">
-                <span onclick="toggleModal('positionModal')"
-                    class="flex bg-gradient-primary p-4 text-white rounded hover:scale-105 transition cursor-pointer">
-                    <i data-lucide="Plus"></i>Criar Novo Cargo
-                </span>
+                <div class="px-5 pb-5">
+                    <div class="flex items-center justify-between text-xs text-slate-500">
+                        <span>Permissões</span>
+                        <span class="font-semibold text-slate-700">{{ $permissionCount }}</span>
+                    </div>
+                    <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                        <div class="bg-gradient-primary h-full rounded-full"
+                            style="width: {{ min(100, $permissionCount * 100 / max(1, $grouped->sum(fn ($group) => $group->count()))) }}%"></div>
+                    </div>
+                </div>
+
+                <div class="mt-auto flex gap-2 border-t border-slate-100 px-5 py-3">
+                    <button type="button" onclick="toggleModal('editPositionModal-{{ $position->id }}')"
+                        class="btn btn-secondary btn-sm flex-1">
+                        <i data-lucide="pencil"></i>Editar
+                    </button>
+                    <button type="button" class="btn btn-danger-soft btn-sm" title="Excluir">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
             </div>
-        </div>
-    </main>
-</x-layout>
+        @endforeach
+
+        <button type="button" onclick="toggleModal('positionModal')"
+            class="flex min-h-48 flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 transition hover:border-accent-500 hover:bg-white hover:text-accent-600">
+            <i data-lucide="plus-circle" class="size-8"></i>
+            <span class="text-sm font-medium">Novo cargo</span>
+        </button>
+    </div>
+</x-app-layout>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Epi;
+use Error;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,9 +21,26 @@ class EpiController extends Controller
         return view('epiView', compact('epis', 'categories'));
     }
 
-    public function show(Epi $epi): JsonResponse
+    public function store(Request $request){    
+        try {
+            Epi::create([
+                'name' => $request->name,
+                'ca' => $request->ca,
+                'category_id' => $request->category,
+                'status' => $request->status,
+            ]);
+
+            return redirect(route('epi.index'))->with('Success', 'EPI criado com sucesso!');
+        }catch(Exception $e){
+            // Log::error('Error', 'Erro ao criar o EPI'.$e->getMessage());
+            return redirect(route('epi.index'))->with('Error', 'Não foi possivel criar o EPI!'. $e->getMessage());; 
+        }
+
+    }
+
+    public function show(Epi $id): JsonResponse
     {
-        return response()->json($epi);
+        return response()->json($id);
     }
 
     public function update(Request $request, Epi $epi)

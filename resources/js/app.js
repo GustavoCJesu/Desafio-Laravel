@@ -1,9 +1,12 @@
+import axios from 'axios'
+
+window.axios = axios
+
 function applyCpfMask() {
     document.querySelectorAll('.cpf').forEach((cpf) => {
         cpf.addEventListener('input', function () {
             let value = this.value.replace(/\D/g, '');
 
-            // Limita a 11 números
             value = value.substring(0, 11);
 
             value = value.replace(/(\d{3})(\d)/, '$1.$2');

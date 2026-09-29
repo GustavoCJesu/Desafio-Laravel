@@ -1,19 +1,18 @@
+@props(['title' => null])
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <!-- Development version -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <!-- Production version -->
+    <title>{{ $title ? $title.' · ' : '' }}Gestão de Funcionários</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="flex flex-col min-h-screen relative">
+<body {{ $attributes->merge(['class' => 'flex flex-col min-h-screen relative']) }}>
     <x-toast />
     {{ $slot }}
 </body>

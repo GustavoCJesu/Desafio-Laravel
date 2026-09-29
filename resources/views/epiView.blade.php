@@ -1,77 +1,96 @@
-<x-layout>
-    <x-edit-epi-modal :categories="$categories" />
+@php
+    $activeEpis = $epis->where('status', 'Ativo')->count();
+@endphp
 
-    <main class="flex flex-1">
-        <x-sidebar-menu />
-        <div class="flex flex-col max-h-screen min-h-screen flex-1 p-6 gap-4 justify-between">
-            <div class="flex flex-col gap-4 flex-1 min-h-0">
-                <div class="bg-gradient-primary uppercase font-bold text-2xl text-white px-6 py-4 rounded-md">
-                    EPIs
-                </div>
+<x-app-layout title="EPIs" subtitle="Equipamentos de proteção individual cadastrados" icon="hard-hat">
+    <x-slot:modals>
+        <x-create-epi-modal :categories="$categories" />
+        <x-edit-epi-modal :categories="$categories" />
+    </x-slot:modals>
 
-                <div class="flex-1 min-h-0 overflow-y-auto rounded-lg border border-gray-200 shadow-md">
-                    <table class="w-full border border-gray-300 text-left rounded overflow-auto text-[12px]">
-                        <thead class="bg-gradient-primary text-[#DCE7FA] sticky top-0 z-10">
-                            <tr class="bg-gradient-primary text-[#DCE7FA]">
-                                <th>CA</th>
-                                <th>Nome</th>
-                                <th>Categoria</th>
-                                <th>Status</th>
-                                <th> {{-- Editar --}} </th>
-                                <th> {{-- Ver --}} </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white text-black ">
-                            @foreach ($epis as $epi)
-                                <tr class="border-b border-gray-300 hover:bg-gray-200 transition duration-100 ease-in-out">
-                                    <td>{{ $epi->ca }}</td>
-                                    <td>{{ $epi->name }}</td>
-                                    <td>{{ $epi->category->name ?? 'N/A' }}</td>
-                                    <td
-                                        class="{{ $epi->status === 'Ativo' ? 'text-green-600' : 'text-red-600' }}">
-                                        {{ $epi->status }}
-                                    </td>
-                                    <td>
-                                        <i onclick="editEpi({{ $epi->id }})"
-                                            class="text-gray-700 hover:scale-120 cursor-pointer transition"
-                                            data-lucide="pencil"></i>
-                                    </td>
-                                    <td>
-                                        <i class="text-gray-700 hover:scale-120 cursor-pointer transition"
-                                            data-lucide="eye"></i>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+    <x-slot:actions>
+        <button type="button" onclick="toggleModal('epimodal')" class="btn btn-primary">
+            <i data-lucide="plus"></i><span class="hidden sm:inline">Adicionar EPI</span>
+        </button>
+    </x-slot:actions>
+
+    <div class="flex flex-col gap-6">
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <x-stat-card label="EPIs cadastrados" :value="$epis->count()" icon="hard-hat" />
+            <x-stat-card label="Ativos" :value="$activeEpis" icon="shield-check" tone="success" />
+            <x-stat-card label="Inativos" :value="$epis->count() - $activeEpis" icon="shield-off" tone="danger" />
+            <x-stat-card label="Categorias" :value="$categories->count()" icon="layers" tone="accent" />
+        </div>
+
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h2 class="card-title">Lista de EPIs</h2>
+                <span class="text-xs text-slate-500">{{ $epis->count() }} registros</span>
             </div>
-
-            <div class="flex">
-                <button type="button"
-                    class="flex items-center gap-2 bg-gradient-primary p-4 text-white rounded hover:scale-105 transition cursor-pointer">
-                    <i data-lucide="plus"></i>Adicionar EPI
-                </button>
+            <div class="max-h-[60vh] overflow-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>CA</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Status</th>
+                            <th class="text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($epis as $epi)
+                            <tr>
+                                <td>
+                                    <span class="rounded-md bg-slate-100 px-2 py-1 font-mono text-xs text-slate-700">{{ $epi->ca }}</span>
+                                </td>
+                                <td class="font-medium text-slate-900">{{ $epi->name }}</td>
+                                <td>{{ $epi->category->name ?? 'N/A' }}</td>
+                                <td>
+                                    <span class="badge {{ $epi->status === 'Ativo' ? 'badge-success' : 'badge-danger' }}">
+                                        {{ $epi->status }}
+                                    </span>
+                                </td>
+                                <td class="text-right">
+                                    <button type="button" onclick="editEpi({{ $epi->id }})" class="icon-btn" title="Editar">
+                                        <i data-lucide="pencil"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="py-16 text-center">
+                                    <i data-lucide="package-open" class="mx-auto size-10 text-slate-300"></i>
+                                    <p class="mt-3 font-medium text-slate-700">Nenhum EPI cadastrado</p>
+                                    <p class="text-sm text-slate-500">Clique em "Adicionar EPI" para começar.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-    </main>
+    </div>
 
     <script>
-        function editEpi(id) {
-            const showUrl = "{{ route('epi.show', ':id') }}".replace(':id', id);
-            const updateUrl = "{{ route('epi.update', ':id') }}".replace(':id', id);
+        async function editEpi(id) {
+            const form = document.getElementById('editEpi');
+            const baseUrl = form.dataset.action;
 
-            fetch(showUrl)
-                .then((response) => response.json())
-                .then((epi) => {
-                    document.getElementById('edit-epi-name').value = epi.name;
-                    document.getElementById('edit-epi-ca').value = epi.ca;
-                    document.getElementById('edit-epi-category').value = epi.category_id;
-                    document.getElementById('edit-epi-status').value = epi.status;
-                    document.getElementById('editEpiForm').action = updateUrl;
+            try {
+                const response = await axios.get(`/epis/${id}`);
+                const data = response.data;
 
-                    toggleModal('editEpiModal');
-                });
+                document.getElementById('edit_ca').value = data.ca;
+                document.getElementById('edit_name').value = data.name;
+                document.getElementById('edit_category').value = data.category_id;
+                document.getElementById('edit_status').value = data.status;
+                form.action = baseUrl.replace('__ID__', id);
+
+                toggleModal('editepimodal');
+            } catch (e) {
+                console.log('Erro: ' + e);
+            }
         }
     </script>
-</x-layout>
+</x-app-layout>

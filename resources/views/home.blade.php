@@ -1,82 +1,91 @@
-<x-layout>
+<x-layout title="Início" class="bg-brand-50">
+    <div class="relative flex min-h-screen flex-col overflow-hidden">
+        {{-- Decoração de fundo --}}
+        <div class="pointer-events-none absolute -top-40 -right-40 size-144 rounded-full bg-accent-500/10 blur-3xl"></div>
+        <div class="pointer-events-none absolute -bottom-40 -left-40 size-120 rounded-full bg-brand-300/20 blur-3xl"></div>
 
-    <main class="min-h-screen bg-[#DCE7FA] flex items-center justify-center p-6">
+        <header class="relative mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
+            <div class="flex items-center gap-2 font-bold text-brand-800">
+                <div class="bg-gradient-primary flex size-9 items-center justify-center rounded-lg text-white">
+                    <i data-lucide="shield-check" class="size-5"></i>
+                </div>
+                Gestão SST
+            </div>
+            <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="btn btn-secondary">
+                {{ auth()->check() ? 'Ir para o painel' : 'Entrar' }}
+            </a>
+        </header>
 
-        <section
-            class="w-full max-w-6xl min-h-150
-                   bg-white rounded-2xl shadow-lg
-                   flex items-center overflow-hidden">
+        <main class="relative mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-6 py-10 lg:grid-cols-2">
+            <div>
+                <span class="badge badge-info">Sistema de Gestão</span>
 
-            <!-- Conteúdo -->
-            <div class="w-1/2 px-16">
-
-                <span class="text-[#4A628C] font-semibold text-lg">
-                    Sistema de Gestão
-                </span>
-
-                <h1 class="mt-4 text-5xl font-bold text-[#334A70]">
-                    Gestão de
-                    <span class="block">Funcionários</span>
+                <h1 class="mt-5 text-4xl leading-tight font-extrabold text-brand-900 sm:text-5xl">
+                    Pessoas, treinamentos e EPIs
+                    <span class="bg-gradient-primary bg-clip-text text-transparent">em um só lugar.</span>
                 </h1>
 
-                <p class="mt-6 max-w-lg text-lg text-gray-500 leading-relaxed">
-                    Uma solução simples para gerenciar funcionários,
-                    cargos, treinamentos e EPIs da sua empresa.
+                <p class="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">
+                    Uma solução simples para gerenciar funcionários, cargos, aulas, certificados
+                    e equipamentos de proteção da sua empresa.
                 </p>
 
-                <a href="{{ route('login') }}"
-                    class="inline-flex items-center gap-3
-                           mt-8 px-8 py-3
-                           bg-[#334A70] text-white
-                           rounded-lg
-                           shadow-md
-                           hover:bg-[#293D5C]
-                           transition">
-                    Login
-
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4
-                               M10 17l5-5-5-5
-                               M15 12H3" />
-                    </svg>
-                </a>
-
-            </div>
-
-
-            <!-- Ilustração -->
-            <div
-                class="w-1/2 h-full
-                       flex items-center justify-center
-                       bg-[#F4F7FD]">
-
-                <div class="text-center">
-
-                    <div
-                        class="w-64 h-64 mx-auto
-                               rounded-full
-                               bg-[#DCE7FA]
-                               flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-32 h-32 text-[#4A628C]" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 21v-2a4 4 0 0 0-4-4H6
-                                   a4 4 0 0 0-4 4v2
-                                   M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z
-                                   M22 21v-2a4 4 0 0 0-3-3.87
-                                   M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                    </div>
-
-                    <p class="mt-6 text-[#4A628C] font-medium">
-                        Gerenciamento simples e eficiente
-                    </p>
-
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <a href="{{ route('login') }}" class="btn btn-primary px-6 py-3 text-base">
+                        Acessar o sistema <i data-lucide="arrow-right"></i>
+                    </a>
                 </div>
 
+                <dl class="mt-12 grid max-w-md grid-cols-3 gap-6">
+                    <div>
+                        <dt class="text-xs text-slate-500 uppercase">Módulos</dt>
+                        <dd class="text-2xl font-bold text-brand-800">7</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 uppercase">Normas</dt>
+                        <dd class="text-2xl font-bold text-brand-800">NRs</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 uppercase">Acesso</dt>
+                        <dd class="text-2xl font-bold text-brand-800">24/7</dd>
+                    </div>
+                </dl>
             </div>
 
-        </section>
-
-    </main>
+            {{-- Ilustração com cartões de módulos --}}
+            <div class="relative hidden lg:block">
+                <div class="card shadow-elevated p-6">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-semibold text-slate-900">Visão geral</p>
+                        <span class="badge badge-success">Online</span>
+                    </div>
+                    <div class="mt-5 grid grid-cols-2 gap-4">
+                        @foreach ([
+                            ['users', 'Funcionários', 'Cadastro e status'],
+                            ['briefcase', 'Cargos', 'Permissões por função'],
+                            ['hard-hat', 'EPIs', 'Controle de CA'],
+                            ['graduation-cap', 'Aulas', 'Treinamentos e NRs'],
+                        ] as [$icon, $label, $text])
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                                <div class="flex size-10 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
+                                    <i data-lucide="{{ $icon }}" class="size-5"></i>
+                                </div>
+                                <p class="mt-3 text-sm font-semibold text-slate-900">{{ $label }}</p>
+                                <p class="text-xs text-slate-500">{{ $text }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="card shadow-elevated absolute -bottom-8 -left-8 flex items-center gap-3 p-4">
+                    <div class="flex size-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                        <i data-lucide="award" class="size-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900">Certificado emitido</p>
+                        <p class="text-xs text-slate-500">NR-35 · Trabalho em altura</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 </x-layout>

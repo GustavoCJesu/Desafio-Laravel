@@ -1,129 +1,156 @@
-<x-layout>
+@php
+    $employees->loadMissing('user');
+    $activeCount = $employees->where('status', 'Ativo')->count();
+@endphp
 
-    {{-- Modal --}}
-    <x-create-employee-modal :roles="$roles" :sectors="$sectors" />
-    <main class="flex-1 flex">
-        {{-- Menu Lateral --}}
-        <x-sidebar-menu />
-        <div class="flex flex-col max-h-screen min-h-screen flex-1 p-6 gap-2 justify-between">
-            <div>
-                <form id="filter" method="GET" action="{{ route('employees.index') }}">
-                    @csrf
-                    <div class="w-full flex align-center justify-between h-fit bg-gradient-primary p-2 rounded">
-                        <div class="flex align-center gap-4">
-                            <input class="w-87 bg-white p-2 rounded" placeholder="João Silva" type="search" name="search"
-                                id="" value={{ $search ?? '' }}>
-                            <a href="{{ route('employees.index') }}"
-                                class="bg-gray-500 hover:bg-gray-600 text-white p-2 rounded flex justify-center items-center">
-                                <i class="w-5  h-auto text-white hover:scale-120 transition"
-                                    data-lucide="rotate-ccw"></i>
-                            </a>
-                        </div>
-                        <div class="flex gap-5 align-center">
-                            <div class="flex align-center bg-white rounded p-2 gap-2 m-auto">
-                                <p>Status: </p>
-                                <div>
-                                    <select onchange="sendForm()"
-                                        class="appearance-none bg-whitetext-gray-700 focus:outline-none focus:shadow-outline"
-                                        id="status" name="status">
-                                        <option value="">Todos</option>
-                                        <option value="Ativo" {{ request('status') == 'Ativo' ? 'selected' : '' }}>
-                                            Ativo</option>
-                                        <option value="Inativo" {{ request('status') == 'Inativo' ? 'selected' : '' }}>
-                                            Inativo</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="flex align-center bg-white rounded p-2 gap-2 m-auto">
-                                <p>Setor: </p>
-                                <div>
-                                    <select onchange="sendForm()"
-                                        class="appearance-none bg-whitetext-gray-700 focus:outline-none focus:shadow-outline"
-                                        id="sector" name="sector">
-                                        <option value="">Todos</option>
-                                        @foreach ($sectors as $sector)
-                                            <option value={{ $sector->id }}
-                                                {{ request('sector') == $sector->id ? 'selected' : '' }}>
-                                                {{ $sector->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="h-full overflow-y-auto rounded-lg border border-gray-200 shadow-md">
-                <table class="w-full border border-gray-300 text-left rounded overflow-auto text-[12px]">
-                    <thead class="bg-gradient-primary text-[#DCE7FA] sticky top-0 z-10">
-                        <tr class="bg-gradient-primary text-[#DCE7FA]">
-                            <th></th>
-                            <th>Matrícula</th>
-                            <th>Nome</th>
-                            <th>Cargo</th>
-                            <th>Setor</th>
-                            <th>CPF</th>
-                            <th>Admissão</th>
-                            <th>Status</th>
-                            <th> {{-- Editar --}} </th>
-                            <th> {{-- Ver --}} </th>
+<x-app-layout title="Funcionários" subtitle="Gerencie o quadro de colaboradores da empresa" icon="users">
+    <x-slot:modals>
+        <x-create-employee-modal :roles="$roles" :sectors="$sectors" />
+    </x-slot:modals>
+
+    <x-slot:actions>
+        <button type="button" onclick="toggleModal('modal')" class="btn btn-primary">
+            <i data-lucide="user-plus"></i><span class="hidden sm:inline">Adicionar funcionário</span>
+        </button>
+    </x-slot:actions>
+
+    <div class="flex flex-col gap-6">
+        <div class="grid gap-4 sm:grid-cols-3">
+            <x-stat-card label="Total listado" :value="$employees->count()" icon="users" />
+            <x-stat-card label="Ativos" :value="$activeCount" icon="user-check" tone="success" />
+            <x-stat-card label="Inativos" :value="$employees->count() - $activeCount" icon="user-x" tone="danger" />
+        </div>
+
+        <div class="card overflow-hidden">
+            {{-- Filtros --}}
+            <form id="filter" method="GET" action="{{ route('employees.index') }}"
+                class="flex flex-col gap-3 border-b border-slate-100 p-4 md:flex-row md:items-center">
+                <div class="relative flex-1">
+                    <i data-lucide="search" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400"></i>
+                    <input class="form-input pl-9" placeholder="Buscar por nome..." type="search" name="search"
+                        value="{{ $search ?? '' }}">
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <select onchange="sendForm()" class="form-input w-auto" id="status" name="status">
+                        <option value="">Todos os status</option>
+                        <option value="Ativo" @selected(request('status') == 'Ativo')>Ativo</option>
+                        <option value="Inativo" @selected(request('status') == 'Inativo')>Inativo</option>
+                    </select>
+                    <select onchange="sendForm()" class="form-input w-auto" id="sector" name="sector">
+                        <option value="">Todos os setores</option>
+                        @foreach ($sectors as $sector)
+                            <option value="{{ $sector->id }}" @selected(request('sector') == $sector->id)>
+                                {{ $sector->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-secondary">
+                        <i data-lucide="filter"></i>Filtrar
+                    </button>
+                    <a href="{{ route('employees.index') }}" class="btn btn-ghost" title="Limpar filtros">
+                        <i data-lucide="rotate-ccw"></i>
+                    </a>
+                </div>
+            </form>
+
+            {{-- Tabela --}}
+            <form id="employee-form" method="POST" action="{{ route('employees.change') }}">
+                @csrf
+            </form>
+
+            <div class="max-h-[60vh] overflow-y-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="w-10"></th>
+                            <th>Funcionário</th>
+                            <th class="hidden md:table-cell">Cargo / Setor</th>
+                            <th class="hidden xl:table-cell">Admissão</th>
+                            <th>Situação</th>
+                            <th class="text-right">Ações</th>
                         </tr>
                     </thead>
-                    <form id="employee-form" method="POST" action={{ route('employees.change') }}>
-                        @csrf
-                        <tbody class="bg-white text-black max-h-26 overflow-scroll">
-                            @foreach ($employees as $employee)
-                                <tr class="border-b border-gray-300 hover:bg-gray-200 cursor-pointer transition duration-100 ease-in-out"
-                                    onclick="selectEmployee(this)">
-                                    <td>
-                                        <input type="radio" name="selected_employees" value="{{ $employee->id }}">
-                                    </td>
-                                    <td>{{ $employee->registration }}</td>
-                                    <td>{{ $employee->name }}</td>
-                                    <td>{{ $employee->companyRole->title ?? 'N/A' }}</td>
-                                    <td>{{ $employee->sector->name ?? 'N/A' }}</td>
-                                    <td>{{ $employee->cpf }}</td>
-                                    <td>{{ $employee->hire_date }}</td>
-                                    <td
-                                        class="{{ $employee->status === 'Ativo' ? 'text-green-600' : 'text-red-600' }}">
-                                        {{ $employee->status }}
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}">
-                                            <i class="text-gray-700 hover:scale-120 cursor-pointer transition"
-                                                data-lucide="pencil"></i>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <span>
-                                            <a href="{{ route('employees.profile', $employee->id) }}">
-                                                <i class="text-gray-700 hover:scale-120 cursor-pointer transition"
-                                                    data-lucide="eye"></i>
-                                            </a>
+                    <tbody>
+                        @forelse ($employees as $employee)
+                            <tr class="cursor-pointer has-checked:bg-brand-50" onclick="selectEmployee(this)">
+                                <td>
+                                    <input type="radio" form="employee-form" name="selected_employees"
+                                        value="{{ $employee->id }}" class="size-4 accent-brand-700">
+                                </td>
+                                <td class="whitespace-normal">
+                                    <div class="flex items-center gap-3">
+                                        <x-avatar :name="$employee->name" class="size-9 text-xs" />
+                                        <div class="min-w-0">
+                                            <p class="font-medium text-slate-900">{{ $employee->name }}</p>
+                                            <p class="text-xs text-slate-500">
+                                                <span class="font-mono">{{ $employee->registration }}</span>
+                                                <span class="hidden lg:inline">· CPF <span class="font-mono">{{ $employee->cpf }}</span></span>
+                                            </p>
+                                            <p class="text-xs text-slate-500 md:hidden">
+                                                {{ $employee->companyRole->title ?? 'N/A' }} · {{ $employee->sector->name ?? 'N/A' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="hidden whitespace-normal md:table-cell">
+                                    <p class="text-slate-900">{{ $employee->companyRole->title ?? 'N/A' }}</p>
+                                    <p class="text-xs text-slate-500">{{ $employee->sector->name ?? 'N/A' }}</p>
+                                </td>
+                                <td class="hidden xl:table-cell">
+                                    {{ $employee->hire_date ? \Illuminate\Support\Carbon::parse($employee->hire_date)->format('d/m/Y') : '—' }}
+                                </td>
+                                <td>
+                                    <div class="flex flex-col items-start gap-1">
+                                        <span class="badge {{ $employee->status === 'Ativo' ? 'badge-success' : 'badge-danger' }}">
+                                            {{ $employee->status }}
                                         </span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </form>
+                                        @if (! $employee->user)
+                                            <span class="flex items-center gap-1 text-xs text-slate-400" title="Sem usuário no sistema">
+                                                <i data-lucide="key-round" class="size-3"></i>Sem usuário
+                                            </span>
+                                        @elseif (! $employee->user->softdel)
+                                            <span class="flex items-center gap-1 text-xs text-emerald-700" title="{{ $employee->user->email }}">
+                                                <i data-lucide="key-round" class="size-3"></i>Acesso ativo
+                                            </span>
+                                        @else
+                                            <span class="flex items-center gap-1 text-xs text-red-700" title="{{ $employee->user->email }}">
+                                                <i data-lucide="key-round" class="size-3"></i>Acesso inativo
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex justify-end gap-1">
+                                        <a href="{{ route('employees.profile', $employee->id) }}" class="icon-btn" title="Ver perfil">
+                                            <i data-lucide="eye"></i>
+                                        </a>
+                                        <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}" class="icon-btn" title="Editar">
+                                            <i data-lucide="pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-16 text-center">
+                                    <i data-lucide="search-x" class="mx-auto size-10 text-slate-300"></i>
+                                    <p class="mt-3 font-medium text-slate-700">Nenhum funcionário encontrado</p>
+                                    <p class="text-sm text-slate-500">Ajuste os filtros ou cadastre um novo funcionário.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
                 </table>
             </div>
-            <div class="flex gap-4 mt-4 justify-between bg">
-                {{-- Botões Adicionar, Editar, Desativar/Ativar, Visualizar --}}
-                <div>
-                    <button type="submit" form="employee-form"
-                        class="bg-gradient-errors hover:scale-105 transition cursor-pointer text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Desativar/Ativar Funcionário
-                    </button>
-                </div>
 
-                <div>
-                    <button onclick="toggleModal('modal')"
-                        class="bg-gradient-primary hover:scale-105 transition cursor-pointer text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Adicionar Funcionário
-                    </button>
-                </div>
+            <div class="flex flex-col gap-3 border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm text-slate-500">
+                    Selecione um funcionário na lista para alterar o status.
+                </p>
+                <button type="submit" form="employee-form" class="btn btn-danger-soft">
+                    <i data-lucide="power"></i>Ativar / Desativar selecionado
+                </button>
             </div>
         </div>
-    </main>
-</x-layout>
+    </div>
+</x-app-layout>

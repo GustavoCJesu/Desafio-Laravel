@@ -1,13 +1,11 @@
 <?php
 
-use App\Http\Controllers\AttendanceController;
-use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EpiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\positionsController;
-use App\Http\Controllers\SessionTrainingController;
+use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,23 +33,15 @@ Route::middleware('auth')->group(function () {
     Route::put('/position/update/{userRole}', [positionsController::class, 'update'])->name('position.update');
 
     Route::get('/epis', [EpiController::class, 'index'])->name('epi.index');
-    Route::get('/epis/{epi}', [EpiController::class, 'show'])->name('epi.show');
-    Route::put('/epis/{epi}', [EpiController::class, 'update'])->name('epi.update');
+    Route::get('/epis/{id}', [EpiController::class, 'show'])->name('epi.show');
+    Route::put('/epis/{id}', [EpiController::class, 'update'])->name('epi.update');
 
-    Route::get('/trainings', [SessionTrainingController::class, 'index'])->name('training.index');
-    Route::post('/trainings/create', [SessionTrainingController::class, 'store'])->name('training.create');
+    Route::post('/epi/create', [EpiController::class, 'store'])->name('epi.create');
 
-    Route::get('/trainings/{training}/edit', [SessionTrainingController::class, 'editView'])->name('training.viewUpdate');
-    Route::put('/trainings/{training}', [SessionTrainingController::class, 'update'])->name('training.update');
-    Route::post('/trainings/{training}/classes', [SessionTrainingController::class, 'storeClass'])->name('training.classes.store');
-    Route::delete('/trainings/{training}/classes/{class}', [SessionTrainingController::class, 'destroyClass'])->name('training.classes.destroy');
-
-    Route::get('/trainings/{training}/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
-    Route::post('/trainings/{training}/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
-    Route::delete('/trainings/{training}/attendance/{attendance}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
-    Route::post('/trainings/{training}/epis', [AttendanceController::class, 'storeEpi'])->name('attendance.epis.store');
-    Route::delete('/trainings/{training}/epis/{epi}', [AttendanceController::class, 'destroyEpi'])->name('attendance.epis.destroy');
-
-    Route::get('/certificates', [CertificateController::class, 'index'])->name('certificate.index');
+    // Telas com dados estáticos (protótipos de interface)
+    Route::view('/painel', 'dashboard')->name('dashboard');
+    Route::view('/aulas', 'trainings')->name('training.index');
+    Route::view('/certificados', 'certificates')->name('certificate.index');
+    Route::get('/relatorios', [RelatorioController::class, 'index'])->name('report.index');
 
 });

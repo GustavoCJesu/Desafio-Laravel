@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap");
 @import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -6,36 +6,224 @@
 
 @theme {
     --font-sans:
-        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
+        "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    --color-brand-50: #f4f7fd;
+    --color-brand-100: #dce7fa;
+    --color-brand-200: #bccdf0;
+    --color-brand-300: #8fa8df;
+    --color-brand-400: #5e7dc7;
+    --color-brand-500: #4a628c;
+    --color-brand-600: #3d5580;
+    --color-brand-700: #334a70;
+    --color-brand-800: #293d5c;
+    --color-brand-900: #1e2e47;
+    --color-brand-950: #141f33;
+
+    --color-accent-400: #6b7bff;
+    --color-accent-500: #475aff;
+    --color-accent-600: #3646e0;
+
+    --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.06);
+    --shadow-elevated: 0 10px 30px -10px rgb(30 46 71 / 0.35);
 }
 
-* {
-    font-family: "Open Sans", Arial, Helvetica, sans-serif;
-    box-sizing: border-box;
-    /* scrollbar-width: none; */
+@layer base {
+    html {
+        -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+        @apply bg-slate-50 text-slate-800;
+    }
+
+    button,
+    [role="button"] {
+        cursor: pointer;
+    }
 }
 
-th,
-td {
-    padding: 15px;
+@layer components {
+    /* Superfícies */
+    .card {
+        @apply rounded-xl border border-slate-200 bg-white shadow-card;
+    }
+
+    .card-header {
+        @apply flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4;
+    }
+
+    .card-title {
+        @apply text-sm font-semibold text-slate-900;
+    }
+
+    .card-body {
+        @apply p-5;
+    }
+
+    /* Botões */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    }
+
+    .btn svg {
+        @apply size-4 shrink-0;
+    }
+
+    .btn-primary {
+        @apply bg-gradient-primary text-white shadow-sm hover:brightness-110 focus-visible:ring-accent-500;
+    }
+
+    .btn-secondary {
+        @apply border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:ring-slate-400;
+    }
+
+    .btn-danger {
+        @apply bg-red-600 text-white shadow-sm hover:bg-red-700 focus-visible:ring-red-500;
+    }
+
+    .btn-danger-soft {
+        @apply bg-red-50 text-red-700 hover:bg-red-100 focus-visible:ring-red-400;
+    }
+
+    .btn-ghost {
+        @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-400;
+    }
+
+    .btn-sm {
+        @apply px-3 py-1.5 text-xs;
+    }
+
+    .icon-btn {
+        @apply inline-flex size-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-brand-700;
+    }
+
+    .icon-btn svg {
+        @apply size-4;
+    }
+
+    /* Formulários */
+    .form-label {
+        @apply mb-1.5 block text-sm font-medium text-slate-700;
+    }
+
+    .form-input {
+        @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm transition placeholder:text-slate-400 focus:border-accent-500 focus:ring-4 focus:ring-accent-500/15 focus:outline-none read-only:bg-slate-50 read-only:text-slate-500;
+    }
+
+    select.form-input {
+        @apply appearance-none bg-no-repeat pr-9;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.6rem center;
+        background-size: 1.25em 1.25em;
+    }
+
+    .form-checkbox {
+        @apply size-4 rounded border-slate-300 accent-brand-700;
+    }
+
+    /* Badges */
+    .badge {
+        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset;
+    }
+
+    .badge::before {
+        content: "";
+        @apply size-1.5 rounded-full bg-current;
+    }
+
+    .badge-success {
+        @apply bg-emerald-50 text-emerald-700 ring-emerald-600/20;
+    }
+
+    .badge-danger {
+        @apply bg-red-50 text-red-700 ring-red-600/20;
+    }
+
+    .badge-warning {
+        @apply bg-amber-50 text-amber-700 ring-amber-600/20;
+    }
+
+    .badge-info {
+        @apply bg-brand-50 text-brand-700 ring-brand-600/20;
+    }
+
+    .badge-neutral {
+        @apply bg-slate-100 text-slate-600 ring-slate-500/20;
+    }
+
+    /* Tabelas */
+    .data-table {
+        @apply w-full text-left text-sm;
+    }
+
+    .data-table thead th {
+        @apply sticky top-0 z-10 border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold tracking-wide whitespace-nowrap text-slate-500 uppercase;
+    }
+
+    .data-table tbody td {
+        @apply border-b border-slate-100 px-4 py-3 whitespace-nowrap text-slate-700;
+    }
+
+    .data-table tbody tr {
+        @apply transition-colors hover:bg-brand-50/60;
+    }
+
+    .data-table tbody tr:last-child td {
+        @apply border-b-0;
+    }
+
+    /* Avatares */
+    .avatar {
+        @apply inline-flex shrink-0 items-center justify-center rounded-full bg-brand-100 font-semibold text-brand-700;
+    }
+
+    /* Modais */
+    .modal-backdrop {
+        @apply fixed inset-0 z-50 items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm;
+    }
+
+    .modal-panel {
+        @apply my-auto w-full overflow-hidden rounded-2xl bg-white shadow-2xl;
+        animation: modal-in 0.2s ease-out;
+    }
+
+    /* Navegação lateral */
+    .nav-link {
+        @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-brand-100/80 transition hover:bg-white/10 hover:text-white;
+    }
+
+    .nav-link svg {
+        @apply size-[18px] shrink-0;
+    }
+
+    .nav-link.is-active {
+        @apply bg-white/15 text-white shadow-sm ring-1 ring-white/10;
+    }
 }
 
-.bg-gradient-primary {
-    background: linear-gradient(
-        90deg,
-        rgba(51, 74, 112, 1) 0%,
-        rgba(71, 90, 255, 1) 100%
-    );
+@utility bg-gradient-primary {
+    background: linear-gradient(135deg, #334a70 0%, #475aff 100%);
 }
-.bg-gradient-errors {
-    background: #ff0000;
-    background: linear-gradient(
-        9044deg,
-        rgba(255, 0, 0, 1) 0%,
-        rgba(176, 23, 23, 1) 100%
-    );
+
+@utility bg-gradient-sidebar {
+    background: linear-gradient(180deg, #1e2e47 0%, #293d5c 55%, #334a70 100%);
+}
+
+@utility bg-gradient-errors {
+    background: linear-gradient(135deg, #ef4444 0%, #b01717 100%);
+}
+
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 @keyframes toast-in {
@@ -66,4 +254,10 @@ td {
 
 .toast.toast-out {
     animation: toast-out 0.25s ease-in forwards;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
 }
