@@ -1,67 +1,70 @@
-@props(['instructors'])
+@props(['norms' => ['NR-06', 'NR-10', 'NR-11', 'NR-12', 'NR-23', 'NR-33', 'NR-35'], 'instructors'])
 
-<div id="trainingModal" class="z-20 absolute hidden top-0 left-0 h-screen w-screen bg-[rgb(0,0,0,0.8)] justify-center align-center">
-    <div class="bg-white h-fit w-140 m-auto rounded-md overflow-hidden flex flex-col justify-center">
-        <div class="bg-gradient-primary p-4 text-white">
-            <h2 class="text-xl font-bold uppercase">
-                Agendar aula
-            </h2>
-        </div>
-        <form action="{{ route('training.create') }}" method="POST" id="trainingForm">
-            @csrf
-            <div class="p-5 flex flex-col gap-3">
-                <div class="flex flex-col">
-                    <label class="font-bold" for="title">Título: </label>
-                    <input name="title" required placeholder="NR-06 Uso de EPI"
-                        class="border border-[rgb(0,0,0,0.25)] rounded p-2" type="text" />
-                </div>
-                <div class="flex flex-col">
-                    <label class="font-bold" for="description">Descrição: </label>
-                    <textarea name="description" required
-                        class="border border-[rgb(0,0,0,0.25)] rounded p-2"></textarea>
-                </div>
-                <div class="flex flex-col">
-                    <label class="font-bold" for="instructor_id">Instrutor: </label>
-                    <select name="instructor_id" required
-                        class="appearance-none border border-[rgb(0,0,0,0.5)] p-2 rounded bg-white focus:outline-none focus:shadow-outline">
-                        @foreach ($instructors as $instructor)
-                            <option value="{{ $instructor->id }}">{{ $instructor->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex flex-col">
-                        <label class="font-bold" for="scheduled">Data e hora: </label>
-                        <input name="scheduled" required
-                            class="border border-[rgb(0,0,0,0.25)] rounded p-2" type="datetime-local" />
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="font-bold" for="validity_dt">Validade: </label>
-                        <input name="validity_dt" required
-                            class="border border-[rgb(0,0,0,0.25)] rounded p-2" type="date" />
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="font-bold" for="class_amount">Qtd. de aulas: </label>
-                        <input name="class_amount" required min="1"
-                            class="border border-[rgb(0,0,0,0.25)] rounded p-2" type="number" />
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="font-bold" for="class_min">Carga mín. (h): </label>
-                        <input name="class_min" required min="1"
-                            class="border border-[rgb(0,0,0,0.25)] rounded p-2" type="number" />
-                    </div>
-                </div>
-                <div class="flex justify-between mt-4">
-                    <button form="trainingForm" type="submit"
-                        class="bg-gradient-primary text-white px-4 py-2 rounded hover:scale-110 transition">
-                        Agendar
-                    </button>
-                    <span onclick="toggleModal('trainingModal')"
-                        class="bg-gradient-errors text-white px-4 py-2 rounded hover:scale-110 transition cursor-pointer">
-                        Cancelar
-                    </span>
-                </div>
+<x-ui.modal id="newTrainingModal" title="Agendar aula" subtitle="Preencha os dados do treinamento." icon="calendar-plus" size="max-w-2xl">
+    <form method="POST" action="{{ route('training.create') }}">
+        @csrf
+        <div class="grid gap-4 px-6 py-5 sm:grid-cols-2">
+            <div>
+                <label class="form-label" for="training_norm">Norma</label>
+                <select id="training_norm" name="norm" required class="form-input">
+                    @foreach ($norms as $norm)
+                        <option value="{{ $norm }}">{{ $norm }}</option>
+                    @endforeach
+                </select>
             </div>
-        </form>
-    </div>
-</div>
+            <div>
+                <label class="form-label" for="training_title">Título</label>
+                <input id="training_title" name="title" required class="form-input" placeholder="Trabalho em Altura" type="text" />
+            </div>
+            <div class="sm:col-span-2">
+                <label class="form-label" for="training_description">Descrição</label>
+                <textarea id="training_description" name="description" required rows="3" class="form-input"
+                    placeholder="Conteúdo programático da aula..."></textarea>
+            </div>
+            <div>
+                <label class="form-label" for="training_instructor">Instrutor</label>
+                <select id="training_instructor" name="instructor_id" required class="form-input">
+                    @foreach ($instructors as $instructor)
+                        <option value="{{ $instructor->id }}">{{ $instructor->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="form-label" for="training_status">Status</label>
+                <select id="training_status" name="status" class="form-input">
+                    <option>Agendado</option>
+                    <option>Concluído</option>
+                    <option>Cancelado</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label" for="training_scheduled">Data e hora</label>
+                <input id="training_scheduled" name="scheduled" required class="form-input" type="datetime-local" />
+            </div>
+            <div>
+                <label class="form-label" for="training_validity">Validade do certificado</label>
+                <input id="training_validity" name="validity_dt" required class="form-input" type="date" />
+            </div>
+            <div>
+                <label class="form-label" for="training_hours">Carga horária (h)</label>
+                <input id="training_hours" name="class_min" required class="form-input" type="number" min="1" placeholder="8" />
+            </div>
+            <div>
+                <label class="form-label" for="training_amount">Qtd. de aulas</label>
+                <input id="training_amount" name="class_amount" required class="form-input" type="number" min="1" placeholder="1" />
+            </div>
+            <div>
+                <label class="form-label" for="training_capacity">Vagas</label>
+                <input id="training_capacity" name="capacity" required class="form-input" type="number" min="1" placeholder="20" />
+            </div>
+            <div>
+                <label class="form-label" for="training_location">Local</label>
+                <input id="training_location" name="location" class="form-input" placeholder="Sala de treinamento 1" type="text" />
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4">
+            <button type="button" class="btn btn-secondary" onclick="toggleModal('newTrainingModal')">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i data-lucide="check"></i>Agendar</button>
+        </div>
+    </form>
+</x-ui.modal>

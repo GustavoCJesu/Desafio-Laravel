@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -45,6 +46,11 @@ class Employee extends Model
     public function session_training(): HasMany
     {
         return $this->hasMany(SessionTraining::class, 'instructor_id');
+    }
+
+    public function trainings(): BelongsToMany
+    {
+        return $this->belongsToMany(SessionTraining::class, 'training_employees', 'employee_id', 'session_training_id')->withTimestamps();
     }
 
     public function user(): HasOne

@@ -42,19 +42,44 @@
                         @forelse ($epis as $epi)
                             <tr>
                                 <td>
-                                    <span class="rounded-md bg-slate-100 px-2 py-1 font-mono text-xs text-slate-700">{{ $epi->ca }}</span>
+                                    <span
+                                        class="rounded-md bg-slate-100 px-2 py-1 font-mono text-xs text-slate-700">{{ $epi->ca }}</span>
                                 </td>
                                 <td class="font-medium text-slate-900">{{ $epi->name }}</td>
                                 <td>{{ $epi->category->name ?? 'N/A' }}</td>
                                 <td>
-                                    <span class="badge {{ $epi->status === 'Ativo' ? 'badge-success' : 'badge-danger' }}">
+                                    <span
+                                        class="badge {{ $epi->status === 'Ativo' ? 'badge-success' : 'badge-danger' }}">
                                         {{ $epi->status }}
                                     </span>
                                 </td>
-                                <td class="text-right">
-                                    <button type="button" onclick="editEpi({{ $epi->id }})" class="icon-btn" title="Editar">
-                                        <i data-lucide="pencil"></i>
-                                    </button>
+                                <td>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button type="button" onclick="editEpi({{ $epi->id }})" class="icon-btn"
+                                            title="Editar">
+                                            <i data-lucide="pencil"></i>
+                                        </button>
+                                        <form action="{{ route('epi.toggle', $epi->id) }}" method="POST">
+                                            @csrf
+                                            @if ($epi->status === 'Ativo')
+                                                <button type="submit" class="btn btn-warning-soft btn-sm" title="Desativar">
+                                                    <i data-lucide="power-off"></i>
+                                                </button>
+                                            @else
+                                                <button type="submit" class="btn btn-success-soft btn-sm" title="Ativar">
+                                                    <i data-lucide="power"></i>
+                                                </button>
+                                            @endif
+                                        </form>
+                                        <form action="{{ route('epi.delete', $epi->id) }}" method="POST"
+                                            onsubmit="return confirm('Deseja excluir este EPI?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
+                                                <i data-lucide="trash-2"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

@@ -56,9 +56,12 @@
             <p class="truncate text-sm font-semibold">{{ $userName }}</p>
             <p class="truncate text-xs text-brand-200 uppercase">{{ $user->userRole->title ?? '' }}</p>
         </div>
-        <a href="{{ route('logout') }}" title="Sair"
-            class="flex size-8 items-center justify-center rounded-lg text-brand-100 transition hover:bg-red-500 hover:text-white">
-            <i data-lucide="log-out" class="size-4"></i>
-        </a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" title="Sair"
+                class="flex size-8 cursor-pointer items-center justify-center rounded-lg text-brand-100 transition hover:bg-red-500 hover:text-white">
+                <i data-lucide="log-out" class="size-4"></i>
+            </button>
+        </form>
     </div>
 </aside>

@@ -3,6 +3,7 @@
 @php
     $modalId = 'editPositionModal-'.$position->id;
 @endphp
+{{-- @dd($position->rolePermissions) --}}
 
 <x-ui.modal :id="$modalId" title="Editar cargo" :subtitle="$position->title" icon="shield" size="max-w-2xl">
     <form action="{{ route('position.update', $position->id) }}" method="POST" id="editPositionForm-{{ $position->id }}">
@@ -15,7 +16,7 @@
             </div>
             <div>
                 <p class="form-label">Permissões</p>
-                <x-ui.permission-grid :grouped="$grouped" :selected="$position->rolePermissions->pluck('permission_id')->all()" />
+                <x-ui.permission-grid :grouped="$grouped" :selected="$position->rolePermissions->pluck('id')->all()" />
             </div>
         </div>
         <div class="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4">

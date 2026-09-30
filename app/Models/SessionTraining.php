@@ -11,12 +11,15 @@ class SessionTraining extends Model
 {
     protected $fillable = [
         'instructor_id',
+        'norm',
         'title',
         'description',
         'scheduled',
         'status',
         'class_amount',
         'class_min',
+        'capacity',
+        'location',
         'validity_dt',
     ];
 
@@ -33,6 +36,11 @@ class SessionTraining extends Model
     public function epis(): BelongsToMany
     {
         return $this->belongsToMany(Epi::class, 'training_epis', 'session_training_id', 'epi_id');
+    }
+
+    public function employees(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, 'training_employees', 'session_training_id', 'employee_id')->withTimestamps();
     }
 
     public function classes(): HasMany

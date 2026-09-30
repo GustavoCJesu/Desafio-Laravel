@@ -8,7 +8,7 @@
         <div class="grid gap-4 px-6 py-5 sm:grid-cols-2">
             <div>
                 <label class="form-label" for="edit_ca">CA</label>
-                <input id="edit_ca" name="ca" class="form-input" type="text" />
+                <input id="edit_ca" name="ca" maxlength="10" class="form-input" type="text" />
             </div>
             <div>
                 <label class="form-label" for="edit_status">Status</label>

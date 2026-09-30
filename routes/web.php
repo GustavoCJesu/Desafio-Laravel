@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PositionsController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SessionTrainingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +16,7 @@ Route::post('/login', [LoginController::class, 'authenticated'])->name('login');
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::get('/employee/profile/{id}', [EmployeeController::class, 'show'])->name('employees.profile');
 
@@ -31,18 +32,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/positions', [PositionsController::class, 'index'])->name('position.index');
     Route::post('/position/create', [PositionsController::class, 'store'])->name('position.create');
     Route::put('/position/update/{userRole}', [PositionsController::class, 'update'])->name('position.update');
-    Route::get('/position/delete/{userRole}', [PositionsController::class, 'destroy'])->name('position.delete');
-
+    Route::delete('/position/delete/{userRole}', [PositionsController::class, 'destroy'])->name('position.delete');
 
     Route::get('/epis', [EpiController::class, 'index'])->name('epi.index');
     Route::get('/epis/{epi}', [EpiController::class, 'show'])->name('epi.show');
     Route::put('/epis/{epi}', [EpiController::class, 'update'])->name('epi.update');
-
+    Route::delete('/epi/delete/{id}', [EpiController::class, 'delete'])->name('epi.delete');
     Route::post('/epi/create', [EpiController::class, 'store'])->name('epi.create');
+    Route::post('epi/toggle/{epi}', [EpiController::class, 'toggle'])->name('epi.toggle');
+
+    // Rotas para aulas
+    Route::get('/aulas', [SessionTrainingController::class, 'index'])->name('training.index');
+    Route::post('/aulas/create', [SessionTrainingController::class, 'store'])->name('training.create');
+    Route::get('/aulas/{sessionTraining}/editar', [SessionTrainingController::class, 'edit'])->name('training.edit');
 
     // Telas com dados estáticos (protótipos de interface)
     Route::view('/painel', 'pages.dashboard')->name('dashboard');
-    Route::view('/aulas', 'pages.trainings.index')->name('training.index');
+
     Route::view('/certificados', 'pages.certificates.index')->name('certificate.index');
     Route::get('/relatorios', [ReportController::class, 'index'])->name('report.index');
 

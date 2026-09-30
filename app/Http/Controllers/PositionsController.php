@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Log;
 
 class PositionsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
 
@@ -25,17 +22,6 @@ class PositionsController extends Controller
         return view('pages.positions.index', compact('positions', 'grouped'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         try {
@@ -62,14 +48,6 @@ class PositionsController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(UserRole $userRole)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(UserRole $userRole)
@@ -87,16 +65,13 @@ class PositionsController extends Controller
                 'title' => $request->title,
             ]);
 
-            $userRole->rolePermissions()->delete();
+            $permissionIds = collect($request->all())
+                ->filter(fn ($value, $key) => str_starts_with($key, 'permission_'))
+                ->map(fn ($value) => intval($value))
+                ->values()
+                ->all();
 
-            foreach ($request->all() as $key => $value) {
-                if (str_starts_with($key, 'permission_')) {
-                    RolePermission::create([
-                        'user_role_id' => $userRole->id,
-                        'permission_id' => intval($value),
-                    ]);
-                }
-            }
+            $userRole->rolePermissions()->sync($permissionIds);
 
             return redirect()->back()->with('Success', 'Cargo atualizado com sucesso');
         } catch (Exception $e) {
@@ -112,12 +87,13 @@ class PositionsController extends Controller
     public function destroy(UserRole $userRole)
     {
         $role = UserRole::findOrFail($userRole->id);
-    
-        if($role->user()->exists()){
+
+        if ($role->user()->exists()) {
             return redirect()->back()->with('Error', 'Não é possivel deletar cargos que tem pessoas utilizando.');
-        }else{
-            $role->rolePermissions()->detach(); 
+        } else {
+            $role->rolePermissions()->detach();
             $role->delete();
+
             return redirect()->back()->with('Success', 'Cargo deletado com sucesso');
         }
     }

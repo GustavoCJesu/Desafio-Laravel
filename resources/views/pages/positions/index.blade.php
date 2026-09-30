@@ -47,9 +47,14 @@
                         class="btn btn-secondary btn-sm flex-1">
                         <i data-lucide="pencil"></i>Editar
                     </button>
-                    <a href="{{ route('position.delete', $id = $position->id)}}" type="button" class="btn btn-danger-soft btn-sm" title="Excluir">
-                        <i data-lucide="trash-2"></i>
-                    </a>
+                    <form action="{{ route('position.delete', $position->id) }}" method="POST"
+                        onsubmit="return confirm('Deseja excluir este cargo?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         @endforeach

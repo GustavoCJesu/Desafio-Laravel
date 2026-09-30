@@ -87,6 +87,14 @@
         @apply bg-red-50 text-red-700 hover:bg-red-100 focus-visible:ring-red-400;
     }
 
+    .btn-success-soft {
+        @apply bg-emerald-50 text-emerald-700 hover:bg-emerald-100 focus-visible:ring-emerald-400;
+    }
+
+    .btn-warning-soft {
+        @apply bg-amber-50 text-amber-700 hover:bg-amber-100 focus-visible:ring-amber-400;
+    }
+
     .btn-ghost {
         @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-400;
     }

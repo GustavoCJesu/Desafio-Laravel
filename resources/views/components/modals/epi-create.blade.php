@@ -6,7 +6,7 @@
         <div class="grid gap-4 px-6 py-5 sm:grid-cols-2">
             <div>
                 <label class="form-label" for="ca">CA</label>
-                <input id="ca" name="ca" required placeholder="12345" class="form-input" type="text" />
+                <input id="ca" name="ca" required maxlength="10" placeholder="12345" class="form-input" type="text" />
             </div>
             <div>
                 <label class="form-label" for="status">Status</label>

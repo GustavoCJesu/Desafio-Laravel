@@ -122,7 +122,7 @@
                     <div>
                         <p class="form-label">Permissões da função</p>
                         <x-ui.permission-grid :grouped="$grouped" readonly
-                            :selected="$employee->user->userRole->rolePermissions->pluck('permission_id')->all()" />
+                            :selected="$employee->user->userRole->rolePermissions->pluck('id')->all()" />
                     </div>
                 </div>
 
