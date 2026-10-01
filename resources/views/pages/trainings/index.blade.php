@@ -79,15 +79,17 @@
                     <div class="p-5">
                         <div class="flex justify-between text-xs text-slate-500">
                             <span>Inscritos</span>
-                            <span class="font-semibold text-slate-700">2/{{$training->capacity}}</span>
+                            <span class="font-semibold text-slate-700">2/{{ $training->capacity }}</span>
                         </div>
                         <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                            <div class="h-full rounded-full bg-brand-500" style="width: {{ (2 / $training->capacity) * 100 }}% "></div>
+                            <div class="h-full rounded-full bg-brand-500"
+                                style="width: {{ (2 / $training->capacity) * 100 }}% "></div>
                         </div>
                     </div>
 
                     <div class="mt-auto flex gap-2 border-t border-slate-100 px-5 py-3">
-                        <button type="button" onclick="event.stopPropagation(); toggleModal('attendanceModal')"
+                        <button type="button"
+                            onclick="event.stopPropagation(); toggleModal('attendanceModal'); getSession({{ $training->id }})"
                             class="btn btn-secondary btn-sm flex-1">
                             <i data-lucide="clipboard-check"></i>Presença
                         </button>

@@ -15,7 +15,8 @@
     <div class="mx-auto grid max-w-7xl items-start gap-6 xl:grid-cols-3">
         <div class="flex flex-col gap-6 xl:col-span-2">
             {{-- Dados da aula --}}
-            <form class="card" onsubmit="event.preventDefault();">
+            <form class="card" method="POST" action="{{ route('training.update', [$sessionTraning = $training->id]) }}">
+                @csrf
                 <div class="card-header">
                     <div class="flex items-center gap-3">
                         <div class="bg-gradient-primary flex size-10 shrink-0 flex-col items-center justify-center rounded-xl text-white">
@@ -96,7 +97,7 @@
             </form>
 
             {{-- Participantes --}}
-            <form class="card overflow-hidden" onsubmit="event.preventDefault();">
+            <form class="card overflow-hidden" method="POST" action="{{ route('training.vincemployee', [$sessionTraning = $training->id]) }}">
                 <div class="card-header">
                     <div class="flex items-center gap-3">
                         <div class="flex size-10 items-center justify-center rounded-full bg-indigo-100 text-accent-600">
@@ -146,7 +147,8 @@
 
         <div class="flex flex-col gap-6">
             {{-- EPIs vinculados --}}
-            <form class="card overflow-hidden" onsubmit="event.preventDefault();">
+            <form class="card overflow-hidden" method="POST" action="{{ route('training.vincepi', [$sessionTraining = $training->id,]) }}">
+                @csrf
                 <div class="card-header">
                     <div class="flex items-center gap-3">
                         <div class="flex size-10 items-center justify-center rounded-full bg-amber-100 text-amber-700">
@@ -210,17 +212,19 @@
                             <span class="flex items-center gap-2">
                                 <i data-lucide="calendar" class="size-4 text-slate-400"></i>{{ $class->class_dt->format('d/m/Y') }}
                             </span>
-                            <button type="button" class="btn btn-danger-soft btn-sm" title="Remover">
-                                <i data-lucide="trash-2"></i>
-                            </button>
+                            <form action="{{ route('training.deleteclass', [$sessionTraining = $training->id, $id = $class->id]) }}" method="POST">
+                                <button type="submit" class="btn btn-danger-soft btn-sm" title="Remover">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </form>
                         </li>
                     @empty
                         <li class="px-5 py-8 text-center text-sm text-slate-500">Nenhuma data cadastrada ainda.</li>
                     @endforelse
                 </ul>
 
-                <form class="flex gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-4" onsubmit="event.preventDefault();">
-                    <input name="class_dt" type="date" class="form-input flex-1" />
+                <form class="flex gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-4" method="POST" action="{{ route('training.createclass', [$sessionTraining = $training->id]) }}">
+                    <input name="class_dt" type="date" class="form-input flex-1" required/>
                     <button type="submit" class="btn btn-primary" title="Adicionar data">
                         <i data-lucide="plus"></i>
                     </button>

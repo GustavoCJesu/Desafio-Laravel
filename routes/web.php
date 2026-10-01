@@ -45,6 +45,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/aulas', [SessionTrainingController::class, 'index'])->name('training.index');
     Route::post('/aulas/create', [SessionTrainingController::class, 'store'])->name('training.create');
     Route::get('/aulas/{sessionTraining}/editar', [SessionTrainingController::class, 'edit'])->name('training.edit');
+    Route::post('/aula/{sessionTraining}/editar', [SessionTrainingController::class, 'update'])->name('training.update');
+
+    Route::get('/aula/{sessionTraining}/show', [SessionTrainingController::class, 'show'])->name('training.show');
+
+    Route::post('/aulas/{sessionTraining}/editar/vincularepi', [SessionTrainingController::class, 'vincEpi'])->name('training.vincepi');
+    Route::post('/aulas/{sessionTraining}/editar/criarAula', [SessionTrainingController::class, 'createClass'])->name('training.createclass');
+    Route::post('/aulas/{sessionTraining}/editar/removerAula/{id}', [SessionTrainingController::class, 'deleteClass'])->name('training.deleteclass');
+    Route::post('/aula/{sessionTraining}/editar/vincEmployee', [SessionTrainingController::class, 'vincEMployee'])->name('training.vincemployee');
 
     // Telas com dados estáticos (protótipos de interface)
     Route::view('/painel', 'pages.dashboard')->name('dashboard');
