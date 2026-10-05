@@ -212,7 +212,7 @@
 }
 
 @utility bg-gradient-primary {
-    background: linear-gradient(135deg, #334a70 0%, #475aff 100%);
+    background-image: linear-gradient(135deg, #334a70 0%, #475aff 100%);
 }
 
 @utility bg-gradient-sidebar {

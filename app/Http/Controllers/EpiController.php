@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EpiRequest;
 use App\Models\Category;
 use App\Models\Epi;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
@@ -38,15 +38,13 @@ class EpiController extends Controller
         } catch (Exception $e) {
             Log::error('Erro ao alterar o status do EPI: '.$e->getMessage());
 
-            return redirect()->back()->with('Error', 'Nãofoi possivel alterar o status do EPI. Informações de erro no Log');
+            return redirect()->back()->with('Error', 'Não foi possível alterar o status do EPI. Mais informações no arquivo de log');
         }
 
     }
 
-    public function store(Request $request)
+    public function store(EpiRequest $request)
     {
-        $request->validate(['ca' => ['required', 'string', 'max:10']]);
-
         try {
             Epi::create([
                 'name' => $request->name,
@@ -59,7 +57,7 @@ class EpiController extends Controller
         } catch (Exception $e) {
             Log::error('Erro ao criar o EPI: '.$e->getMessage());
 
-            return redirect(route('epi.index'))->with('Error', 'Não foi possivel criar o EPI!'.$e->getMessage());
+            return redirect(route('epi.index'))->with('Error', 'Não foi possível criar o EPI!'.$e->getMessage());
         }
 
     }
@@ -69,10 +67,8 @@ class EpiController extends Controller
         return response()->json($epi);
     }
 
-    public function update(Request $request, Epi $epi)
+    public function update(EpiRequest $request, Epi $epi)
     {
-        $request->validate(['ca' => ['required', 'string', 'max:10']]);
-
         try {
             $epi->update([
                 'name' => $request->name,
@@ -95,7 +91,7 @@ class EpiController extends Controller
             $epi = Epi::findOrFail($id);
             $epi->delete();
 
-            return redirect()->back()->with('Success', 'Sucesso ao deletar o EPI.');
+            return redirect()->back()->with('Success', 'EPI deletado com sucesso.');
         } catch (Exception $e) {
             Log::error('Erro ao deletar o EPI: '.$e->getMessage());
 

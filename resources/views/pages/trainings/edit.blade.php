@@ -63,11 +63,6 @@
                         </select>
                     </div>
                     <div>
-                        <label class="form-label" for="scheduled">Data e hora</label>
-                        <input id="scheduled" name="scheduled" class="form-input" type="datetime-local"
-                            value="{{ $training->scheduled->format('Y-m-d\TH:i') }}" />
-                    </div>
-                    <div>
                         <label class="form-label" for="validity_dt">Validade do certificado</label>
                         <input id="validity_dt" name="validity_dt" class="form-input" type="date"
                             value="{{ $training->validity_dt->format('Y-m-d') }}" />
@@ -75,6 +70,10 @@
                     <div>
                         <label class="form-label" for="class_min">Carga horária (h)</label>
                         <input id="class_min" name="class_min" min="1" class="form-input" type="number" value="{{ $training->class_min }}" />
+                    </div>
+                    <div>
+                        <label class="form-label" for="min_hours">Carga horária mínima (h)</label>
+                        <input id="min_hours" name="min_hours" min="1" class="form-input" type="number" value="{{ $training->min_hours }}" />
                     </div>
                     <div>
                         <label class="form-label" for="class_amount">Qtd. de aulas</label>
@@ -117,7 +116,7 @@
                     </div>
                 </div>
 
-                <ul id="participant-list" class="max-h-96 divide-y divide-slate-100 overflow-y-auto">
+                <ul id="participant-list" class="max-h-96 min-h-96 divide-y divide-slate-100 overflow-y-auto">
                     @forelse ($employees as $employee)
                         <li data-search="{{ mb_strtolower($employee->name.' '.$employee->registration) }}">
                             <label class="flex cursor-pointer items-center gap-3 px-5 py-3 hover:bg-slate-50">
@@ -169,7 +168,7 @@
                     </div>
                 </div>
 
-                <ul id="epi-list" class="max-h-80 divide-y divide-slate-100 overflow-y-auto">
+                <ul id="epi-list" class="max-h-80 min-h-80 divide-y divide-slate-100 overflow-y-auto">
                     @forelse ($epis as $epi)
                         <li data-search="{{ mb_strtolower($epi->name.' '.$epi->ca) }}">
                             <label class="flex cursor-pointer items-center gap-3 px-5 py-2.5 hover:bg-slate-50">
@@ -192,7 +191,7 @@
                 </div>
             </form>
 
-            {{-- Datas das aulas --}}
+            {{-- Aulas agendadas --}}
             <div class="card overflow-hidden">
                 <div class="card-header">
                     <div class="flex items-center gap-3">
@@ -200,7 +199,7 @@
                             <i data-lucide="calendar-days" class="size-5"></i>
                         </div>
                         <div>
-                            <h2 class="card-title">Datas das aulas</h2>
+                            <h2 class="card-title">Aulas agendadas</h2>
                             <p class="text-xs text-slate-500">{{ $training->classes->count() }} de {{ $training->class_amount }} cadastradas</p>
                         </div>
                     </div>
@@ -210,22 +209,34 @@
                     @forelse ($training->classes as $class)
                         <li class="flex items-center justify-between px-5 py-2.5 text-sm text-slate-700">
                             <span class="flex items-center gap-2">
-                                <i data-lucide="calendar" class="size-4 text-slate-400"></i>{{ $class->class_dt->format('d/m/Y') }}
+                                <i data-lucide="calendar" class="size-4 text-slate-400"></i>{{ $class->class_dt->format('d/m/Y \à\s H:i') }}
+                                <span class="badge {{ $statusBadges[$class->status] ?? 'badge-info' }}">{{ $class->status }}</span>
                             </span>
-                            <form action="{{ route('training.deleteclass', [$sessionTraining = $training->id, $id = $class->id]) }}" method="POST">
-                                <button type="submit" class="btn btn-danger-soft btn-sm" title="Remover">
-                                    <i data-lucide="trash-2"></i>
-                                </button>
-                            </form>
+                            <div class="flex items-center gap-1">
+                                @if ($class->status !== 'Concluído')
+                                    <form action="{{ route('training.completeclass', [$training->id, $class->id]) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-secondary btn-sm" title="Concluir aula">
+                                            <i data-lucide="check"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                                <form action="{{ route('training.deleteclass', [$training->id, $class->id]) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger-soft btn-sm" title="Remover">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     @empty
-                        <li class="px-5 py-8 text-center text-sm text-slate-500">Nenhuma data cadastrada ainda.</li>
+                        <li class="px-5 py-8 text-center text-sm text-slate-500">Nenhuma aula agendada ainda.</li>
                     @endforelse
                 </ul>
 
                 <form class="flex gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-4" method="POST" action="{{ route('training.createclass', [$sessionTraining = $training->id]) }}">
-                    <input name="class_dt" type="date" class="form-input flex-1" required/>
-                    <button type="submit" class="btn btn-primary" title="Adicionar data">
+                    <input name="class_dt" type="datetime-local" class="form-input flex-1" required/>
+                    <button type="submit" class="btn btn-primary" title="Agendar aula">
                         <i data-lucide="plus"></i>
                     </button>
                 </form>

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PositionRequest;
 use App\Models\Permission;
 use App\Models\RolePermission;
 use App\Models\UserRole;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class PositionsController extends Controller
@@ -22,7 +22,7 @@ class PositionsController extends Controller
         return view('pages.positions.index', compact('positions', 'grouped'));
     }
 
-    public function store(Request $request)
+    public function store(PositionRequest $request)
     {
         try {
             $userRole = UserRole::create([
@@ -58,7 +58,7 @@ class PositionsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, UserRole $userRole)
+    public function update(PositionRequest $request, UserRole $userRole)
     {
         try {
             $userRole->update([
@@ -89,7 +89,7 @@ class PositionsController extends Controller
         $role = UserRole::findOrFail($userRole->id);
 
         if ($role->user()->exists()) {
-            return redirect()->back()->with('Error', 'Não é possivel deletar cargos que tem pessoas utilizando.');
+            return redirect()->back()->with('Error', 'Não é possível deletar cargos que possuem pessoas vinculadas.');
         } else {
             $role->rolePermissions()->detach();
             $role->delete();

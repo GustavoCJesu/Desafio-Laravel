@@ -45,14 +45,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/aulas', [SessionTrainingController::class, 'index'])->name('training.index');
     Route::post('/aulas/create', [SessionTrainingController::class, 'store'])->name('training.create');
     Route::get('/aulas/{sessionTraining}/editar', [SessionTrainingController::class, 'edit'])->name('training.edit');
+    Route::delete('/aula/{sessionTraining}/excluir', [SessionTrainingController::class, 'destroy'])->name('training.delete');
     Route::post('/aula/{sessionTraining}/editar', [SessionTrainingController::class, 'update'])->name('training.update');
 
     Route::get('/aula/{sessionTraining}/show', [SessionTrainingController::class, 'show'])->name('training.show');
 
     Route::post('/aulas/{sessionTraining}/editar/vincularepi', [SessionTrainingController::class, 'vincEpi'])->name('training.vincepi');
     Route::post('/aulas/{sessionTraining}/editar/criarAula', [SessionTrainingController::class, 'createClass'])->name('training.createclass');
+    Route::post('/aulas/{sessionTraining}/editar/concluirAula/{id}', [SessionTrainingController::class, 'completeClass'])->name('training.completeclass');
     Route::post('/aulas/{sessionTraining}/editar/removerAula/{id}', [SessionTrainingController::class, 'deleteClass'])->name('training.deleteclass');
     Route::post('/aula/{sessionTraining}/editar/vincEmployee', [SessionTrainingController::class, 'vincEMployee'])->name('training.vincemployee');
+    Route::post('/aula/{sessionTraining}/attendance/', [SessionTrainingController::class, 'attendanceSession'])->name('training.attendance');
 
     // Telas com dados estáticos (protótipos de interface)
     Route::view('/painel', 'pages.dashboard')->name('dashboard');

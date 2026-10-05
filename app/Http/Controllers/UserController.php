@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserRoleRequest;
 use App\Models\User;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
@@ -42,7 +42,7 @@ class UserController extends Controller
             return redirect(route('employees.viewUpdate', ['id' => $request->employee_id]))
                 ->with('Success', 'Usuário criado com sucesso!');
         } catch (Exception $e) {
-            Log::error('Erro na criação do usuario: '.$e->getMessage());
+            Log::error('Erro na criação do usuário: '.$e->getMessage());
 
             return redirect(route('employees.viewUpdate', ['id' => $request->employee_id]))
                 ->with('Error', 'Não foi possível criar o usuário.');
@@ -68,7 +68,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(UserRoleRequest $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -80,7 +80,7 @@ class UserController extends Controller
 
             return redirect()->back()->with('Success', 'Usuário editado com sucesso!');
         } catch (Exception $e) {
-            Log::error('Erro na edição do usuario: '.$e->getMessage());
+            Log::error('Erro na edição do usuário: '.$e->getMessage());
 
             return redirect()->back()->with('Error', 'Não foi possível editar o usuário.');
         }

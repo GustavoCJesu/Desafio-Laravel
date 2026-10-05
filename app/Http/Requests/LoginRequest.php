@@ -24,8 +24,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' =>'required|email',
-            'password' => 'required|min:6|max:30'
+            'email' => 'required|email',
+            'password' => 'required|min:6|max:30',
         ];
     }
 
@@ -33,12 +33,12 @@ class LoginRequest extends FormRequest
     public function messages()
     {
         return [
-            'email.required' => 'O campo email é obrigatorio.',
-            'email.unique' => 'Este email ja esta em uso.',
-            'email.email' => 'O campo deve ser preenchido com um email valido.',
-            'password.required' => 'O campo de senha deve ser preenciho.',
-            'password.min' => 'A senha deve conter no minimo 6 caracteres.',
-            'password.max' => 'A senha deve conter no maximo 30 caracteres.'
+            'email.required' => 'O campo e-mail é obrigatório.',
+            'email.unique' => 'Este e-mail já está em uso.',
+            'email.email' => 'O campo deve ser preenchido com um e-mail válido.',
+            'password.required' => 'O campo de senha deve ser preenchido.',
+            'password.min' => 'A senha deve conter no mínimo 6 caracteres.',
+            'password.max' => 'A senha deve conter no máximo 30 caracteres.',
         ];
     }
 }

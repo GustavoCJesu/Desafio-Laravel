@@ -3,80 +3,81 @@
 namespace Database\Seeders;
 
 use App\Models\Permission;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class PermissionsSeeder extends Seeder {
+class PermissionsSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      */
-    public function run(): void {
+    public function run(): void
+    {
         Permission::create([
-            'name' => 'Ver funcionarios'
+            'name' => 'Ver funcionários',
         ]);
 
         Permission::create([
-            'name' => 'Criar funcionarios'
+            'name' => 'Criar funcionários',
         ]);
 
         Permission::create([
-            'name' => 'Apagar funcionarios'
+            'name' => 'Apagar funcionários',
         ]);
 
         Permission::create([
-            'name' => 'Editar funcionarios'
+            'name' => 'Editar funcionários',
         ]);
 
         Permission::create([
-            'name' => 'Ver treinamentos'
+            'name' => 'Ver treinamentos',
         ]);
 
         Permission::create([
-            'name' => 'Criar treinamentos'
+            'name' => 'Criar treinamentos',
         ]);
 
         Permission::create([
-            'name' => 'Apagar treinamentos'
+            'name' => 'Apagar treinamentos',
         ]);
 
         Permission::create([
-            'name' => 'Editar treinamentos'
+            'name' => 'Editar treinamentos',
         ]);
 
         Permission::create([
-            'name' => 'Permitir certificados'
+            'name' => 'Permitir certificados',
         ]);
 
         Permission::create([
-            'name' => 'Ver EPIs'
+            'name' => 'Ver EPIs',
         ]);
 
         Permission::create([
-            'name' => 'Criar EPIs'
+            'name' => 'Criar EPIs',
         ]);
 
         Permission::create([
-            'name' => 'Apagar EPIs'
+            'name' => 'Apagar EPIs',
         ]);
 
         Permission::create([
-            'name' => 'Editar EPIs'
+            'name' => 'Editar EPIs',
         ]);
 
         Permission::create([
-            'name' => 'Ver relatórios'
+            'name' => 'Ver relatórios',
         ]);
 
         Permission::create([
-            'name' => 'Criar relatórios'
+            'name' => 'Criar relatórios',
         ]);
 
         Permission::create([
-            'name' => 'Apagar relatórios'
+            'name' => 'Apagar relatórios',
         ]);
 
         Permission::create([
-            'name' => 'Exportar relatórios'
+            'name' => 'Exportar relatórios',
         ]);
     }
 }

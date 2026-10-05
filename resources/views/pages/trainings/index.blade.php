@@ -1,7 +1,11 @@
-<x-layouts.app title="Aulas" subtitle="Treinamentos e reciclagens das Normas Regulamentadoras" icon="graduation-cap">
+@php
+    $statusBadges = ['Agendado' => 'badge-info', 'Concluído' => 'badge-success', 'Cancelado' => 'badge-danger'];
+@endphp
+
+<x-layouts.app title="Aulas" subtitle="Treinamentos e reciclagens das Normas Regulamentadoras" icon="graduation-cap" class="flex flex-col">
     <x-slot:modals>
         <x-modals.training-create :instructors="$instructors" />
-        <x-modals.training-attendance />
+
     </x-slot:modals>
 
     <x-slot:actions>
@@ -9,13 +13,12 @@
             <i data-lucide="calendar-plus"></i><span class="hidden sm:inline">Agendar aula</span>
         </button>
     </x-slot:actions>
-
-    <div class="flex flex-col gap-6">
+    <div class="flex flex-1 flex-col gap-6">
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <x-ui.stat-card label="Agendadas" value="4" icon="calendar-clock" tone="accent" />
-            <x-ui.stat-card label="Concluídas no ano" value="38" icon="check-circle-2" tone="success" />
-            <x-ui.stat-card label="Horas de treinamento" value="1.240" icon="clock" />
-            <x-ui.stat-card label="Taxa de presença" value="92%" icon="user-check" tone="warning" />
+            <x-ui.stat-card label="Agendadas" value="{{ $scheduled }}" icon="calendar-clock" tone="accent" />
+            <x-ui.stat-card label="Concluídas no ano" value="{{ $completed }}" icon="check-circle-2" tone="success" />
+            <x-ui.stat-card label="Horas de treinamento" value="{{ $hours }}" icon="clock" />
+            <x-ui.stat-card label="Taxa de presença" value="{{ $attendance_rate }}%" icon="user-check" tone="warning" />
         </div>
 
         {{-- Filtros por status --}}
@@ -35,8 +38,9 @@
             </div>
         </div> --}}
 
-        <div class="grid gap-5 md:grid-cols-2 2xl:grid-cols-3" id="training-list">
+        <div class="grid content-start gap-5 md:grid-cols-2 xl:grid-cols-3" id="training-list">
             @forelse ($trainings as $training)
+            <x-modals.training-attendance :id='$training->id' :attendees='$training->employees' :classes='$training->classes' />
                 <article class="card flex cursor-pointer flex-col transition hover:shadow-elevated"
                     data-status="Agendado" data-search="nr-35 trabalho em altura carlos mendes"
                     onclick="window.location='{{ route('training.edit', $training->id) }}'">
@@ -50,21 +54,23 @@
                             </div>
                             <div>
                                 <h3 class="font-semibold text-slate-900">{{ $training->title }}</h3>
-                                <p class="text-xs text-slate-500">{{ $training->norm }} ·
-                                    {{ $training->scheduled->format('H:i') }}</p>
+                                <p class="text-xs text-slate-500">{{ $training->norm }} · {{ $training->class_min }}h</p>
                             </div>
                         </div>
-                        <span class="badge badge-info">Agendado</span>
+                        <span class="badge {{ $statusBadges[$training->status] ?? 'badge-neutral' }}">{{ $training->status }}</span>
                     </div>
 
                     <dl class="grid grid-cols-2 gap-3 px-5 text-sm">
                         <div class="flex items-center gap-2 text-slate-600">
-                            <i data-lucide="calendar"
-                                class="size-4 text-slate-400"></i>{{ $training->scheduled->format('d/m/Y') }}
+                            <i data-lucide="calendar" class="size-4 shrink-0 text-slate-400"></i>
+                            <span class="truncate" title="Próxima aula">
+                                {{ $training->next_class_dt ? \Illuminate\Support\Carbon::parse($training->next_class_dt)->format('d/m/Y \à\s H:i') : 'Sem próxima aula' }}
+                            </span>
                         </div>
                         <div class="flex items-center gap-2 text-slate-600">
-                            <i data-lucide="clock"
-                                class="size-4 text-slate-400"></i>{{ $training->scheduled->format('H:i') }}
+                            <i data-lucide="check-circle-2" class="size-4 shrink-0 text-slate-400"></i>
+                            <span class="truncate">{{ $training->completed_classes_count }} de
+                                {{ $training->class_amount }} aulas concluídas</span>
                         </div>
                         <div class="flex items-center gap-2 text-slate-600">
                             <i data-lucide="user-round" class="size-4 text-slate-400"></i><span class="truncate">
@@ -79,17 +85,17 @@
                     <div class="p-5">
                         <div class="flex justify-between text-xs text-slate-500">
                             <span>Inscritos</span>
-                            <span class="font-semibold text-slate-700">2/{{ $training->capacity }}</span>
+                            <span class="font-semibold text-slate-700"> {{ count($training->employees) }}/{{ $training->capacity }}</span>
                         </div>
                         <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100">
                             <div class="h-full rounded-full bg-brand-500"
-                                style="width: {{ (2 / $training->capacity) * 100 }}% "></div>
+                                style="width: {{ (count($training->employees) / $training->capacity) * 100 }}% "></div>
                         </div>
                     </div>
 
                     <div class="mt-auto flex gap-2 border-t border-slate-100 px-5 py-3">
                         <button type="button"
-                            onclick="event.stopPropagation(); toggleModal('attendanceModal'); getSession({{ $training->id }})"
+                            onclick="event.stopPropagation(); toggleModal('attendanceModal{{ $training->id }}'); getSession({{ $training->id }})"
                             class="btn btn-secondary btn-sm flex-1">
                             <i data-lucide="clipboard-check"></i>Presença
                         </button>
@@ -97,6 +103,15 @@
                             title="Editar">
                             <i data-lucide="pencil"></i>
                         </a>
+                        <form method="POST" action="{{ route('training.delete', $training->id) }}"
+                            onclick="event.stopPropagation()"
+                            onsubmit="return confirm('Deseja excluir esta aula? As aulas, presenças e vínculos dela também serão removidos.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </form>
                     </div>
                 </article>
             @empty
@@ -107,6 +122,19 @@
                 </div>
             @endforelse
         </div>
+
+        @if ($trainings->total() > 0)
+            <div class="mt-auto flex flex-col items-center justify-between gap-3 sm:flex-row" id="training-pagination">
+                <p class="text-sm text-slate-500">
+                    Página <span class="font-semibold text-slate-700">{{ $trainings->currentPage() }}</span>
+                    de <span class="font-semibold text-slate-700">{{ $trainings->lastPage() }}</span>
+                    · {{ $trainings->total() }} {{ $trainings->total() === 1 ? 'aula' : 'aulas' }}
+                </p>
+                @if ($trainings->hasPages())
+                    {{ $trainings->links() }}
+                @endif
+            </div>
+        @endif
     </div>
 
     <script>

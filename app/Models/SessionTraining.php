@@ -14,17 +14,16 @@ class SessionTraining extends Model
         'norm',
         'title',
         'description',
-        'scheduled',
         'status',
         'class_amount',
         'class_min',
+        'min_hours',
         'capacity',
         'location',
         'validity_dt',
     ];
 
     protected $casts = [
-        'scheduled' => 'datetime',
         'validity_dt' => 'date',
     ];
 
@@ -46,5 +45,22 @@ class SessionTraining extends Model
     public function classes(): HasMany
     {
         return $this->hasMany(Classes::class);
+    }
+
+    /**
+     * Marks the training as concluded once every planned class is concluded,
+     * and reopens it if that is no longer true. Cancelled trainings are kept.
+     */
+    public function syncStatusWithClasses(): void
+    {
+        if ($this->status === 'Cancelado') {
+            return;
+        }
+
+        $totalClasses = $this->classes()->count();
+        $pendingClasses = $this->classes()->where('status', '!=', 'Concluído')->count();
+        $isConcluded = $totalClasses > 0 && $totalClasses >= $this->class_amount && $pendingClasses === 0;
+
+        $this->update(['status' => $isConcluded ? 'Concluído' : 'Agendado']);
     }
 }

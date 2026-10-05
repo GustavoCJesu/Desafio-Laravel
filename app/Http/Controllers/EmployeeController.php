@@ -71,7 +71,7 @@ class EmployeeController extends Controller
             ]);
             $employee->save();
 
-            return redirect(route('employees.viewUpdate', $id))->with('Success', 'Editado com sucesso');
+            return redirect(route('employees.viewUpdate', $id))->with('Success', 'Funcionário editado com sucesso.');
         } catch (Exception $e) {
             Log::error('Erro ao atualizar o funcionario: '.$e->getMessage());
 

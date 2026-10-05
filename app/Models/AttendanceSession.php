@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class AttendenceSession extends Model
+class AttendanceSession extends Model
 {
     protected $fillable = [
         'employee_id',
         'classes_id',
-        'employee_attendence',
-        'session_treining_id',
-        'class_dt'
+        'employee_attendance',
+        'class_dt',
     ];
 
     public function employee(): BelongsTo

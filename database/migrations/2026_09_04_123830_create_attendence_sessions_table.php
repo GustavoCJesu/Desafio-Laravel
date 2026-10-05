@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignIdFor(Classes::class, 'session_treining_id')->constrained('session_trainings');
             $table->foreignIdFor(Employee::class, 'employee_id')->constrained('employees');
             $table->string('employee_attendence');
-            $table->date('class_dt');
             $table->timestamps();
         });
     }
