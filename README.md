@@ -1,58 +1,127 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Gestão SST — Pessoas & Segurança
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web para controle de funcionários, EPIs, treinamentos (NRs) e emissão de certificados, com acesso controlado por cargo e permissões.
 
-## About Laravel
+Construído com Laravel 13, PHP 8.3, Blade, Tailwind CSS 4 e Vite. Os testes usam Pest.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Módulos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Módulo | O que faz |
+|---|---|
+| Funcionários | Cadastro, edição, ativação/desativação, perfil e criação do usuário de acesso. |
+| Cargos | Cargos de usuário (admin, gestor, colaborador…) e as permissões de cada um. |
+| EPIs | Cadastro por CA e categoria, edição, ativação/desativação e exclusão. |
+| Aulas | Treinamentos por norma, com aulas (datas e carga horária), EPIs vinculados, funcionários convocados e presença. |
+| Certificados | Emissão para os funcionários elegíveis de uma aula e acompanhamento da validade. |
+| Relatórios | Indicadores de pessoas, treinamentos e EPIs. |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Regras dos treinamentos e certificados
 
-## Learning Laravel
+- **Elegibilidade:** o funcionário é certificado quando a soma das horas das aulas em que compareceu é maior ou igual à carga mínima (`min_hours`) do treinamento. Não é exigida presença integral.
+- **Conclusão:** o treinamento passa a "Concluído" quando todas as aulas planejadas são concluídas.
+- **Emissão:** feita por confirmação manual ("Emitir certificados"), exige a permissão `certificates.allow` e só fica disponível com o treinamento concluído.
+- **Validade:** informada em **meses** (`validity_months`) no treinamento. A data de vencimento do certificado é a data de emissão somada a esse número de meses.
+- **EPIs do certificado:** a tabela `certificate_epis` guarda quais EPIs do treinamento valem para cada certificado.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Permissões
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+O acesso é controlado por cargo (`user_roles`), que possui um conjunto de permissões (`permissions` e `role_permissions`). Cada permissão tem um `slug` no formato `recurso.ação`:
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+| Recurso | Slugs |
+|---|---|
+| Funcionários | `employees.view`, `employees.create`, `employees.update`, `employees.delete` |
+| Treinamentos | `trainings.view`, `trainings.create`, `trainings.update`, `trainings.delete` |
+| EPIs | `epis.view`, `epis.create`, `epis.update`, `epis.delete` |
+| Relatórios | `reports.view`, `reports.create`, `reports.delete`, `reports.export` |
+| Certificados | `certificates.allow` |
 
-## Agentic Development
+Como funciona:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- `User::hasPermission($slug)` consulta as permissões do cargo do usuário. Usuário sem cargo, ou com cargo inativo, não tem nenhuma permissão.
+- Um `Gate::before` em `App\Providers\AppServiceProvider` libera a habilidade quando o cargo tem o slug. Caso contrário, deixa Gates e Policies decidirem.
+- As rotas em `routes/web.php` são protegidas com `->middleware('can:<slug>')`. Sem permissão, a resposta é 403.
+- As views usam `@can('<slug>')` para esconder botões, links e itens do menu. Isso é só interface: quem protege de verdade são as rotas.
+
+Ainda sem permissão própria, e portanto liberadas a qualquer usuário autenticado: painel, cargos e a listagem de certificados.
+
+Para criar uma permissão nova, adicione o par `name`/`slug` em `database/seeders/PermissionsSeeder.php`, vincule-a aos cargos em `RolePermissionSeeder` e proteja a rota com `can:<slug>`. A ordem do seeder importa, porque o `RolePermissionSeeder` referencia as permissões pelo id.
+
+## Requisitos
+
+- PHP 8.3 ou superior, com as extensões usuais do Laravel e o driver do banco escolhido
+- Composer
+- Node.js e npm
+- MySQL, ou SQLite (padrão do `.env.example`)
+
+## Instalação
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer setup
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+O script instala as dependências PHP e JS, cria o `.env` a partir do `.env.example`, gera a chave da aplicação, roda as migrations e compila os assets.
 
-## Contributing
+Para usar MySQL em vez de SQLite, ajuste o `.env` antes das migrations:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=desafio
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Code of Conduct
+Depois, para recriar o banco já com dados de exemplo:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan migrate:fresh --seed
+```
 
-## Security Vulnerabilities
+> `migrate:fresh` apaga todas as tabelas. Use apenas em ambiente de desenvolvimento.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Dados de exemplo
 
-## License
+O seed cria setores, cargos da empresa, funcionários, categorias e EPIs, treinamentos com aulas e presenças e certificados em diferentes situações de validade (válido, a vencer e vencido), além dos cargos de usuário com suas permissões.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+A senha de todos os usuários do seed é `123456`. Alguns logins:
+
+| E-mail | Cargo | Permissões |
+|---|---|---|
+| `gustavo@gmail.com` | admin | todas |
+| `mariana@gmail.com` | gestor | ver, criar, editar e apagar funcionários, treinamentos e EPIs, e ver/criar relatórios (sem emitir certificados nem exportar relatórios) |
+| `camila@gmail.com` | colaborador | ver funcionários, treinamentos, EPIs e relatórios, e emitir certificados |
+
+## Executando
+
+```bash
+composer dev
+```
+
+Sobe o servidor de desenvolvimento junto com o Vite. Se uma alteração de frontend não aparecer, rode `npm run build` ou deixe o `composer dev` ativo.
+
+## Testes
+
+```bash
+php artisan test --compact
+```
+
+Os testes usam SQLite em memória (`phpunit.xml`), então a extensão `pdo_sqlite` precisa estar instalada. Para rodar contra outro banco, defina `DB_CONNECTION` e `DB_DATABASE` na própria execução, **sempre apontando para um banco descartável**, porque os testes refazem o schema:
+
+```bash
+DB_CONNECTION=mysql DB_DATABASE=desafio_test php artisan test --compact
+```
+
+Os helpers de teste, como `userWithPermissions()`, ficam em `tests/Pest.php`.
+
+## Padrão de código
+
+O projeto usa o [Laravel Pint](https://laravel.com/docs/pint):
+
+```bash
+vendor/bin/pint --dirty
+```
+
+## Licença
+
+Projeto baseado no Laravel, que é um software de código aberto sob a [licença MIT](https://opensource.org/licenses/MIT).
