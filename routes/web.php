@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EpiController;
 use App\Http\Controllers\HomeController;
@@ -17,50 +18,52 @@ Route::post('/login', [LoginController::class, 'authenticated'])->name('login');
 Route::middleware('auth')->group(function () {
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-    Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
-    Route::get('/employee/profile/{id}', [EmployeeController::class, 'show'])->name('employees.profile');
+    Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index')->middleware('can:employees.view');
+    Route::get('/employee/profile/{id}', [EmployeeController::class, 'show'])->name('employees.profile')->middleware('can:employees.view');
 
-    Route::post('/change-status', [EmployeeController::class, 'toggleStatus'])->name('employees.change');
-    Route::post('/employees/create', [EmployeeController::class, 'store'])->name('employees.create');
+    Route::post('/change-status', [EmployeeController::class, 'toggleStatus'])->name('employees.change')->middleware('can:employees.update');
+    Route::post('/employees/create', [EmployeeController::class, 'store'])->name('employees.create')->middleware('can:employees.create');
 
-    Route::get('/employees/update/{id}/edit', [EmployeeController::class, 'edit'])->name('employees.viewUpdate');
-    Route::put('/employees/update/{id}', [EmployeeController::class, 'update'])->name('employee.update');
+    Route::get('/employees/update/{id}/edit', [EmployeeController::class, 'edit'])->name('employees.viewUpdate')->middleware('can:employees.update');
+    Route::put('/employees/update/{id}', [EmployeeController::class, 'update'])->name('employee.update')->middleware('can:employees.update');
 
-    Route::post('/employee/user/create', [UserController::class, 'store'])->name('user.create');
-    Route::put('/employee/user/edit/{id}', [UserController::class, 'update'])->name('user.update');
+    Route::post('/employee/user/create', [UserController::class, 'store'])->name('user.create')->middleware('can:employees.update');
+    Route::put('/employee/user/edit/{id}', [UserController::class, 'update'])->name('user.update')->middleware('can:employees.update');
 
     Route::get('/positions', [PositionsController::class, 'index'])->name('position.index');
     Route::post('/position/create', [PositionsController::class, 'store'])->name('position.create');
     Route::put('/position/update/{userRole}', [PositionsController::class, 'update'])->name('position.update');
     Route::delete('/position/delete/{userRole}', [PositionsController::class, 'destroy'])->name('position.delete');
 
-    Route::get('/epis', [EpiController::class, 'index'])->name('epi.index');
-    Route::get('/epis/{epi}', [EpiController::class, 'show'])->name('epi.show');
-    Route::put('/epis/{epi}', [EpiController::class, 'update'])->name('epi.update');
-    Route::delete('/epi/delete/{id}', [EpiController::class, 'delete'])->name('epi.delete');
-    Route::post('/epi/create', [EpiController::class, 'store'])->name('epi.create');
-    Route::post('epi/toggle/{epi}', [EpiController::class, 'toggle'])->name('epi.toggle');
+    Route::get('/epis', [EpiController::class, 'index'])->name('epi.index')->middleware('can:epis.view');
+    Route::get('/epis/{epi}', [EpiController::class, 'show'])->name('epi.show')->middleware('can:epis.view');
+    Route::put('/epis/{epi}', [EpiController::class, 'update'])->name('epi.update')->middleware('can:epis.update');
+    Route::delete('/epi/delete/{id}', [EpiController::class, 'delete'])->name('epi.delete')->middleware('can:epis.delete');
+    Route::post('/epi/create', [EpiController::class, 'store'])->name('epi.create')->middleware('can:epis.create');
+    Route::post('epi/toggle/{epi}', [EpiController::class, 'toggle'])->name('epi.toggle')->middleware('can:epis.update');
 
     // Rotas para aulas
-    Route::get('/aulas', [SessionTrainingController::class, 'index'])->name('training.index');
-    Route::post('/aulas/create', [SessionTrainingController::class, 'store'])->name('training.create');
-    Route::get('/aulas/{sessionTraining}/editar', [SessionTrainingController::class, 'edit'])->name('training.edit');
-    Route::delete('/aula/{sessionTraining}/excluir', [SessionTrainingController::class, 'destroy'])->name('training.delete');
-    Route::post('/aula/{sessionTraining}/editar', [SessionTrainingController::class, 'update'])->name('training.update');
+    Route::get('/aulas', [SessionTrainingController::class, 'index'])->name('training.index')->middleware('can:trainings.view');
+    Route::post('/aulas/create', [SessionTrainingController::class, 'store'])->name('training.create')->middleware('can:trainings.create');
+    Route::get('/aulas/{sessionTraining}/editar', [SessionTrainingController::class, 'edit'])->name('training.edit')->middleware('can:trainings.update');
+    Route::delete('/aula/{sessionTraining}/excluir', [SessionTrainingController::class, 'destroy'])->name('training.delete')->middleware('can:trainings.delete');
+    Route::post('/aula/{sessionTraining}/editar', [SessionTrainingController::class, 'update'])->name('training.update')->middleware('can:trainings.update');
 
-    Route::get('/aula/{sessionTraining}/show', [SessionTrainingController::class, 'show'])->name('training.show');
+    Route::get('/aula/{sessionTraining}/show', [SessionTrainingController::class, 'show'])->name('training.show')->middleware('can:trainings.view');
 
-    Route::post('/aulas/{sessionTraining}/editar/vincularepi', [SessionTrainingController::class, 'vincEpi'])->name('training.vincepi');
-    Route::post('/aulas/{sessionTraining}/editar/criarAula', [SessionTrainingController::class, 'createClass'])->name('training.createclass');
-    Route::post('/aulas/{sessionTraining}/editar/concluirAula/{id}', [SessionTrainingController::class, 'completeClass'])->name('training.completeclass');
-    Route::post('/aulas/{sessionTraining}/editar/removerAula/{id}', [SessionTrainingController::class, 'deleteClass'])->name('training.deleteclass');
-    Route::post('/aula/{sessionTraining}/editar/vincEmployee', [SessionTrainingController::class, 'vincEMployee'])->name('training.vincemployee');
-    Route::post('/aula/{sessionTraining}/attendance/', [SessionTrainingController::class, 'attendanceSession'])->name('training.attendance');
+    Route::post('/aulas/{sessionTraining}/editar/vincularepi', [SessionTrainingController::class, 'vincEpi'])->name('training.vincepi')->middleware('can:trainings.update');
+    Route::post('/aulas/{sessionTraining}/editar/criarAula', [SessionTrainingController::class, 'createClass'])->name('training.createclass')->middleware('can:trainings.update');
+    Route::post('/aulas/{sessionTraining}/editar/concluirAula/{id}', [SessionTrainingController::class, 'completeClass'])->name('training.completeclass')->middleware('can:trainings.update');
+    Route::post('/aulas/{sessionTraining}/editar/removerAula/{id}', [SessionTrainingController::class, 'deleteClass'])->name('training.deleteclass')->middleware('can:trainings.update');
+    Route::post('/aula/{sessionTraining}/editar/vincEmployee', [SessionTrainingController::class, 'vincEMployee'])->name('training.vincemployee')->middleware('can:trainings.update');
+    Route::post('/aula/{sessionTraining}/attendance/', [SessionTrainingController::class, 'attendanceSession'])->name('training.attendance')->middleware('can:trainings.update');
 
     // Telas com dados estáticos (protótipos de interface)
     Route::view('/painel', 'pages.dashboard')->name('dashboard');
 
-    Route::view('/certificados', 'pages.certificates.index')->name('certificate.index');
-    Route::get('/relatorios', [ReportController::class, 'index'])->name('report.index');
+    Route::get('/certificados', [CertificateController::class, 'index'])->name('certificate.index');
+    Route::post('/cerificate/issue/{Session}', [CertificateController::class, 'store'])->name('certificate.store')->middleware('can:certificates.allow');
+
+    Route::get('/relatorios', [ReportController::class, 'index'])->name('report.index')->middleware('can:reports.view');
 
 });

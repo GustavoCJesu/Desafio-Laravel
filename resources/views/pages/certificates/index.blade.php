@@ -1,18 +1,18 @@
 @php
     // Dados estáticos para prototipação da interface
-    $certificates = [
-        ['code' => 'CERT-2026-0412', 'employee' => 'Ana Paula Souza', 'registration' => '4821-3', 'course' => 'NR-35 Trabalho em Altura', 'hours' => 8, 'issued' => '04/10/2024', 'expires' => '04/10/2026', 'status' => 'A vencer'],
-        ['code' => 'CERT-2026-0398', 'employee' => 'Bruno Costa', 'registration' => '1932-7', 'course' => 'NR-10 Segurança em Eletricidade', 'hours' => 40, 'issued' => '11/10/2024', 'expires' => '11/10/2026', 'status' => 'A vencer'],
-        ['code' => 'CERT-2026-0377', 'employee' => 'Juliana Martins', 'registration' => '7710-1', 'course' => 'NR-06 Uso correto de EPI', 'hours' => 4, 'issued' => '15/03/2026', 'expires' => '15/03/2027', 'status' => 'Válido'],
-        ['code' => 'CERT-2026-0351', 'employee' => 'Marcos Oliveira', 'registration' => '3345-9', 'course' => 'NR-33 Espaço Confinado', 'hours' => 16, 'issued' => '02/02/2026', 'expires' => '02/02/2027', 'status' => 'Válido'],
-        ['code' => 'CERT-2026-0320', 'employee' => 'Patrícia Lima', 'registration' => '0584-2', 'course' => 'NR-12 Máquinas e Equipamentos', 'hours' => 8, 'issued' => '18/09/2026', 'expires' => '18/09/2028', 'status' => 'Válido'],
-        ['code' => 'CERT-2025-1187', 'employee' => 'Lucas Ferreira', 'registration' => '6671-5', 'course' => 'NR-23 Proteção contra Incêndios', 'hours' => 4, 'issued' => '20/08/2025', 'expires' => '20/08/2026', 'status' => 'Vencido'],
-        ['code' => 'CERT-2025-1102', 'employee' => 'Rafael Nunes', 'registration' => '2290-4', 'course' => 'NR-11 Operação de Empilhadeira', 'hours' => 16, 'issued' => '05/06/2025', 'expires' => '05/06/2026', 'status' => 'Vencido'],
-        ['code' => 'CERT-2026-0301', 'employee' => 'Camila Ribeiro', 'registration' => '5518-0', 'course' => 'NR-35 Trabalho em Altura', 'hours' => 8, 'issued' => '10/09/2026', 'expires' => '10/09/2028', 'status' => 'Válido'],
-    ];
+    // $certificates = [
+    //     ['code' => 'CERT-2026-0412', 'employee' => 'Ana Paula Souza', 'registration' => '4821-3', 'course' => 'NR-35 Trabalho em Altura', 'hours' => 8, 'issued' => '04/10/2024', 'expires' => '04/10/2026', 'status' => 'A vencer'],
+    //     ['code' => 'CERT-2026-0398', 'employee' => 'Bruno Costa', 'registration' => '1932-7', 'course' => 'NR-10 Segurança em Eletricidade', 'hours' => 40, 'issued' => '11/10/2024', 'expires' => '11/10/2026', 'status' => 'A vencer'],
+    //     ['code' => 'CERT-2026-0377', 'employee' => 'Juliana Martins', 'registration' => '7710-1', 'course' => 'NR-06 Uso correto de EPI', 'hours' => 4, 'issued' => '15/03/2026', 'expires' => '15/03/2027', 'status' => 'Válido'],
+    //     ['code' => 'CERT-2026-0351', 'employee' => 'Marcos Oliveira', 'registration' => '3345-9', 'course' => 'NR-33 Espaço Confinado', 'hours' => 16, 'issued' => '02/02/2026', 'expires' => '02/02/2027', 'status' => 'Válido'],
+    //     ['code' => 'CERT-2026-0320', 'employee' => 'Patrícia Lima', 'registration' => '0584-2', 'course' => 'NR-12 Máquinas e Equipamentos', 'hours' => 8, 'issued' => '18/09/2026', 'expires' => '18/09/2028', 'status' => 'Válido'],
+    //     ['code' => 'CERT-2025-1187', 'employee' => 'Lucas Ferreira', 'registration' => '6671-5', 'course' => 'NR-23 Proteção contra Incêndios', 'hours' => 4, 'issued' => '20/08/2025', 'expires' => '20/08/2026', 'status' => 'Vencido'],
+    //     ['code' => 'CERT-2025-1102', 'employee' => 'Rafael Nunes', 'registration' => '2290-4', 'course' => 'NR-11 Operação de Empilhadeira', 'hours' => 16, 'issued' => '05/06/2025', 'expires' => '05/06/2026', 'status' => 'Vencido'],
+    //     ['code' => 'CERT-2026-0301', 'employee' => 'Camila Ribeiro', 'registration' => '5518-0', 'course' => 'NR-35 Trabalho em Altura', 'hours' => 8, 'issued' => '10/09/2026', 'expires' => '10/09/2028', 'status' => 'Válido'],
+    // ];
 
     $statusBadges = ['Válido' => 'badge-success', 'A vencer' => 'badge-warning', 'Vencido' => 'badge-danger'];
-    $counts = array_count_values(array_column($certificates, 'status'));
+    // $counts = array_count_values(array_column($certificates, 'status'));
 @endphp
 
 <x-layouts.app title="Certificados" subtitle="Certificados emitidos e controle de validade" icon="award">
@@ -35,10 +35,10 @@
                     </p>
                     <div class="mt-10 grid grid-cols-2 gap-8 text-xs text-slate-500">
                         <div class="border-t border-slate-300 pt-2">
-                            Emitido em <span class="font-semibold text-slate-700" data-cert="issued"></span>
+                            Emitido em <span class="font-semibold text-slate-700" data-cert="confirmed_at"></span>
                         </div>
                         <div class="border-t border-slate-300 pt-2">
-                            Válido até <span class="font-semibold text-slate-700" data-cert="expires"></span>
+                            Válido até <span class="font-semibold text-slate-700" data-cert="expires_at"></span>
                         </div>
                     </div>
                     <p class="mt-6 font-mono text-[10px] text-slate-400" data-cert="code"></p>
@@ -97,7 +97,7 @@
                     <tbody id="certificate-rows">
                         @foreach ($certificates as $certificate)
                             <tr data-status="{{ $certificate['status'] }}"
-                                data-search="{{ mb_strtolower($certificate['employee'].' '.$certificate['registration'].' '.$certificate['course'].' '.$certificate['code']) }}">
+                                data-search="{{ mb_strtolower($certificate['employee'].' '.$certificate['registration'].' '.$certificate['course']) }}">
                                 <td class="font-mono text-xs text-slate-500">{{ $certificate['code'] }}</td>
                                 <td>
                                     <div class="flex items-center gap-3">
@@ -109,9 +109,9 @@
                                     </div>
                                 </td>
                                 <td>{{ $certificate['course'] }}</td>
-                                <td>{{ $certificate['issued'] }}</td>
-                                <td>{{ $certificate['expires'] }}</td>
-                                <td><span class="badge {{ $statusBadges[$certificate['status']] }}">{{ $certificate['status'] }}</span></td>
+                                <td>{{ $certificate['confirmed_at'] }}</td>
+                                <td><span>{{ $certificate['expires_at'] }}</span></td>
+                                <td><span class="badge {{ $statusBadges[$certificate['status']] ?? 'badge-neutral' }}">{{ $certificate['status'] }}</span></td>
                                 <td>
                                     <div class="flex justify-end gap-1">
                                         <button type="button" class="icon-btn" title="Visualizar"

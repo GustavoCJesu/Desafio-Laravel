@@ -41,9 +41,11 @@
         <button type="button" onclick="window.print()" class="btn btn-secondary no-print">
             <i data-lucide="printer"></i><span class="hidden sm:inline">Imprimir</span>
         </button>
-        <button type="button" class="btn btn-primary no-print">
-            <i data-lucide="download"></i><span class="hidden sm:inline">Exportar</span>
-        </button>
+        @can('reports.export')
+            <button type="button" class="btn btn-primary no-print">
+                <i data-lucide="download"></i><span class="hidden sm:inline">Exportar</span>
+            </button>
+        @endcan
     </x-slot:actions>
 
     <div class="flex flex-col gap-6">

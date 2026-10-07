@@ -20,11 +20,7 @@ class SessionTraining extends Model
         'min_hours',
         'capacity',
         'location',
-        'validity_dt',
-    ];
-
-    protected $casts = [
-        'validity_dt' => 'date',
+        'validity_months',
     ];
 
     public function instructor(): BelongsTo
@@ -45,6 +41,11 @@ class SessionTraining extends Model
     public function classes(): HasMany
     {
         return $this->hasMany(Classes::class);
+    }
+
+    public function certificate(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
     }
 
     /**

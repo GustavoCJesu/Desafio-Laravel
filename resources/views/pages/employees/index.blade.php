@@ -5,13 +5,17 @@
 
 <x-layouts.app title="Funcionários" subtitle="Gerencie o quadro de colaboradores da empresa" icon="users">
     <x-slot:modals>
-        <x-modals.employee-create :roles="$roles" :sectors="$sectors" />
+        @can('employees.create')
+            <x-modals.employee-create :roles="$roles" :sectors="$sectors" />
+        @endcan
     </x-slot:modals>
 
     <x-slot:actions>
-        <button type="button" onclick="toggleModal('modal')" class="btn btn-primary">
-            <i data-lucide="user-plus"></i><span class="hidden sm:inline">Adicionar funcionário</span>
-        </button>
+        @can('employees.create')
+            <button type="button" onclick="toggleModal('modal')" class="btn btn-primary">
+                <i data-lucide="user-plus"></i><span class="hidden sm:inline">Adicionar funcionário</span>
+            </button>
+        @endcan
     </x-slot:actions>
 
     <div class="flex flex-col gap-6">
@@ -124,9 +128,11 @@
                                         <a href="{{ route('employees.profile', $employee->id) }}" class="icon-btn" title="Ver perfil">
                                             <i data-lucide="eye"></i>
                                         </a>
-                                        <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}" class="icon-btn" title="Editar">
-                                            <i data-lucide="pencil"></i>
-                                        </a>
+                                        @can('employees.update')
+                                            <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}" class="icon-btn" title="Editar">
+                                                <i data-lucide="pencil"></i>
+                                            </a>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -143,14 +149,16 @@
                 </table>
             </div>
 
-            <div class="flex flex-col gap-3 border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-sm text-slate-500">
-                    Selecione um funcionário na lista para alterar o status.
-                </p>
-                <button type="submit" form="employee-form" class="btn btn-danger-soft">
-                    <i data-lucide="power"></i>Ativar / Desativar selecionado
-                </button>
-            </div>
+            @can('employees.update')
+                <div class="flex flex-col gap-3 border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-sm text-slate-500">
+                        Selecione um funcionário na lista para alterar o status.
+                    </p>
+                    <button type="submit" form="employee-form" class="btn btn-danger-soft">
+                        <i data-lucide="power"></i>Ativar / Desativar selecionado
+                    </button>
+                </div>
+            @endcan
         </div>
     </div>
 </x-layouts.app>

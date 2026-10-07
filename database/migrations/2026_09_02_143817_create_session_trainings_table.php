@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('class_amount');
             $table->integer('class_min');
             $table->unsignedInteger('min_hours');
-            $table->date('validity_dt');
+            $table->unsignedInteger('validity_months');
             $table->timestamps();
         });
     }

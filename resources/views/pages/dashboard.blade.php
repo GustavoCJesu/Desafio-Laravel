@@ -42,9 +42,11 @@
 
 <x-layouts.app title="Painel" subtitle="Resumo geral de pessoas, treinamentos e segurança" icon="layout-dashboard">
     <x-slot:actions>
-        <a href="{{ route('report.index') }}" class="btn btn-secondary">
-            <i data-lucide="bar-chart-3"></i><span class="hidden sm:inline">Relatórios</span>
-        </a>
+        @can('reports.view')
+            <a href="{{ route('report.index') }}" class="btn btn-secondary">
+                <i data-lucide="bar-chart-3"></i><span class="hidden sm:inline">Relatórios</span>
+            </a>
+        @endcan
     </x-slot:actions>
 
     <div class="flex flex-col gap-6">
@@ -58,9 +60,11 @@
                     <h2 class="mt-1 text-2xl font-bold">Você tem 17 certificados próximos do vencimento</h2>
                     <p class="mt-1 text-sm text-brand-100">Agende as reciclagens para manter a equipe em conformidade.</p>
                 </div>
-                <a href="{{ route('training.index') }}" class="btn shrink-0 bg-white text-brand-800 hover:bg-brand-50">
-                    <i data-lucide="calendar-plus"></i>Ver aulas
-                </a>
+                @can('trainings.view')
+                    <a href="{{ route('training.index') }}" class="btn shrink-0 bg-white text-brand-800 hover:bg-brand-50">
+                        <i data-lucide="calendar-plus"></i>Ver aulas
+                    </a>
+                @endcan
             </div>
         </div>
 
@@ -128,7 +132,9 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Próximas aulas</h3>
-                    <a href="{{ route('training.index') }}" class="text-xs font-semibold text-accent-600 hover:underline">Ver todas</a>
+                    @can('trainings.view')
+                        <a href="{{ route('training.index') }}" class="text-xs font-semibold text-accent-600 hover:underline">Ver todas</a>
+                    @endcan
                 </div>
                 <ul class="divide-y divide-slate-100">
                     @foreach ($upcomingClasses as $class)

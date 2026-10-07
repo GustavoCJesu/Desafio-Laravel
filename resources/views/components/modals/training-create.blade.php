@@ -49,8 +49,8 @@
                 </select>
             </div>
             <div>
-                <label class="form-label" for="training_validity">Validade do certificado</label>
-                <input id="training_validity" name="validity_dt" required class="form-input" type="date" />
+                <label class="form-label" for="training_validity">Validade do certificado (meses)</label>
+                <input id="training_validity" name="validity_months" min="1" required class="form-input" type="number" />
             </div>
             <div>
                 <label class="form-label" for="training_hours">Carga horária (h)</label>

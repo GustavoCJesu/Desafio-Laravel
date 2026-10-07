@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Employee extends Model
@@ -42,11 +43,6 @@ class Employee extends Model
         return $this->belongsTo(CompanyRole::class, 'company_role_id');
     }
 
-    public function session_training(): BelongsToMany
-    {
-        return $this->belongsToMany(SessionTraining::class, 'training_employees', 'session_training_id', 'employee_id');
-    }
-
     public function trainings(): BelongsToMany
     {
         return $this->belongsToMany(SessionTraining::class, 'training_employees', 'employee_id', 'session_training_id')->withTimestamps();
@@ -55,13 +51,23 @@ class Employee extends Model
     public function classes(): BelongsToMany
     {
         return $this->belongsToMany(Classes::class, 'attendance_sessions', 'employee_id', 'classes_id')
-            ->withPivot(['employee_attendance', 'class_dt'])
+            ->withPivot(['employee_attendance'])
             ->withTimestamps();
     }
 
     public function user(): HasOne
     {
         return $this->hasOne(User::class);
+    }
+
+    public function attendance_sessions(): HasMany
+    {
+        return $this->hasMany(AttendanceSession::class);
+    }
+
+    public function certificate(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
     }
 
     public static function generateRegistration()

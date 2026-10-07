@@ -4,14 +4,17 @@
 
 <x-layouts.app title="Aulas" subtitle="Treinamentos e reciclagens das Normas Regulamentadoras" icon="graduation-cap" class="flex flex-col">
     <x-slot:modals>
-        <x-modals.training-create :instructors="$instructors" />
-
+        @can('trainings.create')
+            <x-modals.training-create :instructors="$instructors" />
+        @endcan
     </x-slot:modals>
 
     <x-slot:actions>
-        <button type="button" onclick="toggleModal('newTrainingModal')" class="btn btn-primary">
-            <i data-lucide="calendar-plus"></i><span class="hidden sm:inline">Agendar aula</span>
-        </button>
+        @can('trainings.create')
+            <button type="button" onclick="toggleModal('newTrainingModal')" class="btn btn-primary">
+                <i data-lucide="calendar-plus"></i><span class="hidden sm:inline">Agendar aula</span>
+            </button>
+        @endcan
     </x-slot:actions>
     <div class="flex flex-1 flex-col gap-6">
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -40,10 +43,12 @@
 
         <div class="grid content-start gap-5 md:grid-cols-2 xl:grid-cols-3" id="training-list">
             @forelse ($trainings as $training)
-            <x-modals.training-attendance :id='$training->id' :attendees='$training->employees' :classes='$training->classes' />
-                <article class="card flex cursor-pointer flex-col transition hover:shadow-elevated"
+            @can('trainings.update')
+                <x-modals.training-attendance :id='$training->id' :attendees='$training->employees' :classes='$training->classes' />
+            @endcan
+                <article @class(['card flex flex-col transition hover:shadow-elevated', 'cursor-pointer' => auth()->user()->can('trainings.update')])
                     data-status="Agendado" data-search="nr-35 trabalho em altura carlos mendes"
-                    onclick="window.location='{{ route('training.edit', $training->id) }}'">
+                    @can('trainings.update') onclick="window.location='{{ route('training.edit', $training->id) }}'" @endcan>
                     <div class="flex items-start justify-between gap-3 p-5">
                         <div class="flex items-start gap-3">
                             <div
@@ -93,26 +98,39 @@
                         </div>
                     </div>
 
-                    <div class="mt-auto flex gap-2 border-t border-slate-100 px-5 py-3">
-                        <button type="button"
-                            onclick="event.stopPropagation(); toggleModal('attendanceModal{{ $training->id }}'); getSession({{ $training->id }})"
-                            class="btn btn-secondary btn-sm flex-1">
-                            <i data-lucide="clipboard-check"></i>Presença
-                        </button>
-                        <a href="{{ route('training.edit', $training->id) }}" class="btn btn-ghost btn-sm"
-                            title="Editar">
-                            <i data-lucide="pencil"></i>
-                        </a>
-                        <form method="POST" action="{{ route('training.delete', $training->id) }}"
-                            onclick="event.stopPropagation()"
-                            onsubmit="return confirm('Deseja excluir esta aula? As aulas, presenças e vínculos dela também serão removidos.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
-                                <i data-lucide="trash-2"></i>
-                            </button>
-                        </form>
-                    </div>
+                    @canany(['trainings.update', 'trainings.delete'])
+                        <div class="mt-auto flex gap-2 border-t border-slate-100 px-5 py-3">
+                            @can('trainings.update')
+                                <button type="button"
+                                    onclick="event.stopPropagation(); toggleModal('attendanceModal{{ $training->id }}'); getSession({{ $training->id }})"
+                                    class="btn btn-secondary btn-sm flex-1">
+                                    <i data-lucide="clipboard-check"></i>Presença
+                                </button>
+                                @if ($training->status === 'Concluído')
+                                    <a href="{{ route('training.edit', $training->id) }}#certificates"
+                                        onclick="event.stopPropagation()" class="btn btn-secondary btn-sm"
+                                        title="Emitir certificados">
+                                        <i data-lucide="award"></i>
+                                    </a>
+                                @endif
+                                <a href="{{ route('training.edit', $training->id) }}" class="btn btn-ghost btn-sm"
+                                    title="Editar">
+                                    <i data-lucide="pencil"></i>
+                                </a>
+                            @endcan
+                            @can('trainings.delete')
+                                <form method="POST" action="{{ route('training.delete', $training->id) }}"
+                                    onclick="event.stopPropagation()"
+                                    onsubmit="return confirm('Deseja excluir esta aula? As aulas, presenças e vínculos dela também serão removidos.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                </form>
+                            @endcan
+                        </div>
+                    @endcanany
                 </article>
             @empty
                 {{-- Lugar para se caso nenhuma aula estiver cadastrada --}}

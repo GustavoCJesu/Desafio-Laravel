@@ -9,75 +9,33 @@ class PermissionsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * A ordem importa: o RolePermissionSeeder referencia as permissões pelo id.
      */
     public function run(): void
     {
-        Permission::create([
-            'name' => 'Ver funcionários',
-        ]);
+        $permissions = [
+            ['name' => 'Ver funcionários', 'slug' => 'employees.view'],
+            ['name' => 'Criar funcionários', 'slug' => 'employees.create'],
+            ['name' => 'Apagar funcionários', 'slug' => 'employees.delete'],
+            ['name' => 'Editar funcionários', 'slug' => 'employees.update'],
+            ['name' => 'Ver treinamentos', 'slug' => 'trainings.view'],
+            ['name' => 'Criar treinamentos', 'slug' => 'trainings.create'],
+            ['name' => 'Apagar treinamentos', 'slug' => 'trainings.delete'],
+            ['name' => 'Editar treinamentos', 'slug' => 'trainings.update'],
+            ['name' => 'Permitir certificados', 'slug' => 'certificates.allow'],
+            ['name' => 'Ver EPIs', 'slug' => 'epis.view'],
+            ['name' => 'Criar EPIs', 'slug' => 'epis.create'],
+            ['name' => 'Apagar EPIs', 'slug' => 'epis.delete'],
+            ['name' => 'Editar EPIs', 'slug' => 'epis.update'],
+            ['name' => 'Ver relatórios', 'slug' => 'reports.view'],
+            ['name' => 'Criar relatórios', 'slug' => 'reports.create'],
+            ['name' => 'Apagar relatórios', 'slug' => 'reports.delete'],
+            ['name' => 'Exportar relatórios', 'slug' => 'reports.export'],
+        ];
 
-        Permission::create([
-            'name' => 'Criar funcionários',
-        ]);
-
-        Permission::create([
-            'name' => 'Apagar funcionários',
-        ]);
-
-        Permission::create([
-            'name' => 'Editar funcionários',
-        ]);
-
-        Permission::create([
-            'name' => 'Ver treinamentos',
-        ]);
-
-        Permission::create([
-            'name' => 'Criar treinamentos',
-        ]);
-
-        Permission::create([
-            'name' => 'Apagar treinamentos',
-        ]);
-
-        Permission::create([
-            'name' => 'Editar treinamentos',
-        ]);
-
-        Permission::create([
-            'name' => 'Permitir certificados',
-        ]);
-
-        Permission::create([
-            'name' => 'Ver EPIs',
-        ]);
-
-        Permission::create([
-            'name' => 'Criar EPIs',
-        ]);
-
-        Permission::create([
-            'name' => 'Apagar EPIs',
-        ]);
-
-        Permission::create([
-            'name' => 'Editar EPIs',
-        ]);
-
-        Permission::create([
-            'name' => 'Ver relatórios',
-        ]);
-
-        Permission::create([
-            'name' => 'Criar relatórios',
-        ]);
-
-        Permission::create([
-            'name' => 'Apagar relatórios',
-        ]);
-
-        Permission::create([
-            'name' => 'Exportar relatórios',
-        ]);
+        foreach ($permissions as $permission) {
+            Permission::create($permission);
+        }
     }
 }

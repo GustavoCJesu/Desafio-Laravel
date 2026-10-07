@@ -3,7 +3,6 @@
 use App\Models\CompanyRole;
 use App\Models\Employee;
 use App\Models\Sector;
-use App\Models\User;
 
 test('updating an employee without changing the cpf succeeds', function () {
     $sector = Sector::factory()->create();
@@ -14,7 +13,7 @@ test('updating an employee without changing the cpf succeeds', function () {
         'cpf' => '111.111.111-11',
     ]);
 
-    $response = $this->actingAs(User::factory()->create())
+    $response = $this->actingAs(userWithPermissions('ativo', 'employees.update'))
         ->put(route('employee.update', $employee->id), [
             'name' => $employee->name,
             'cpf' => $employee->cpf,
@@ -43,7 +42,7 @@ test('updating an employee with another employees cpf fails validation', functio
         'cpf' => '222.222.222-22',
     ]);
 
-    $response = $this->actingAs(User::factory()->create())
+    $response = $this->actingAs(userWithPermissions('ativo', 'employees.update'))
         ->put(route('employee.update', $employee->id), [
             'name' => $employee->name,
             'cpf' => $existing->cpf,

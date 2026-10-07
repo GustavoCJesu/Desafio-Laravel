@@ -77,10 +77,31 @@ class SessionTrainingController extends Controller
     public function edit(SessionTraining $sessionTraining): View
     {
         $training = $sessionTraining->load(['epis', 'classes', 'employees']);
-        $employees = Employee::with('sector')->where('status', 'Ativo')->orderBy('name')->get();
+        $employees = Employee::with('sector', 'trainings', 'classes')->where('status', '=', 'Ativo')->orderBy('name')->get();
         $epis = Epi::with('category')->where('status', 'Ativo')->orderBy('name')->get();
+        $sessionEmployees = $sessionTraining->employees->select('registration', 'name')->toArraY();
 
-        return view('pages.trainings.edit', compact('training', 'employees', 'epis'));
+        // dd($sessionEmployees);
+
+        $certificateCandidates = $sessionTraining->employees->map(function ($user) use ($sessionTraining) {
+            $attendances = $user->attendance_sessions->where('employee_attendance', 'Compareceu')->pluck('classes_id');
+            $classes = $sessionTraining->classes->where('status', 'Concluído');
+
+            $totalHours = $classes->whereIn('id', $attendances)->sum('duration_hours');
+
+            return [
+                'name' => $user->name,
+                'registration' => $user->registration,
+                'hours' => $totalHours,
+            ];
+
+        })->filter()->values();
+
+        $certificateCandidates = $certificateCandidates->toArray();
+
+        // dd($certificateCandidates);
+
+        return view('pages.trainings.edit', compact('training', 'employees', 'epis', 'certificateCandidates', 'sessionEmployees'));
     }
 
     public function update(SessionTrainingRequest $request, SessionTraining $sessionTraining)
@@ -136,15 +157,29 @@ class SessionTrainingController extends Controller
     {
         $sessionTraining->loadCount('classes');
         $quantidadeAulas = $sessionTraining->classes_count;
+        $called_up = $sessionTraining->employees;
+
+        // dd($called_up);
 
         try {
             if ($quantidadeAulas >= $sessionTraining->class_amount) {
                 return redirect()->back()->with('Error', 'Número máximo de aulas atingido.');
             } else {
-                Classes::create([
+                $class = Classes::create([
                     'session_training_id' => $sessionTraining->id,
                     'class_dt' => $request->validated('class_dt'),
+                    'duration_hours' => $request->validated('duration_hours'),
                 ]);
+
+                foreach ($called_up as $called) {
+                    AttendanceSession::create([
+                        'classes_id' => $class->id,
+                        'employee_id' => $called->id,
+                        'employee_attendance' => 'Convocado',
+                    ]);
+                }
+
+                // dd($class);
                 $sessionTraining->syncStatusWithClasses();
             }
 

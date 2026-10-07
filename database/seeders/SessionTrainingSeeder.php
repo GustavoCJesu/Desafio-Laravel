@@ -23,7 +23,7 @@ class SessionTrainingSeeder extends Seeder
             'min_hours' => 8,
             'capacity' => 20,
             'location' => 'Sala de treinamento 1',
-            'validity_dt' => '2028-10-02',
+            'validity_months' => 24,
         ]);
 
         SessionTraining::create([
@@ -37,7 +37,7 @@ class SessionTrainingSeeder extends Seeder
             'min_hours' => 4,
             'capacity' => 30,
             'location' => 'Auditório',
-            'validity_dt' => '2027-10-05',
+            'validity_months' => 12,
         ]);
 
         SessionTraining::create([
@@ -51,7 +51,7 @@ class SessionTrainingSeeder extends Seeder
             'min_hours' => 40,
             'capacity' => 15,
             'location' => 'Laboratório elétrico',
-            'validity_dt' => '2028-10-09',
+            'validity_months' => 24,
         ]);
 
         SessionTraining::create([
@@ -65,7 +65,7 @@ class SessionTrainingSeeder extends Seeder
             'min_hours' => 16,
             'capacity' => 12,
             'location' => 'Área externa',
-            'validity_dt' => '2027-10-14',
+            'validity_months' => 12,
         ]);
 
         SessionTraining::create([
@@ -79,7 +79,7 @@ class SessionTrainingSeeder extends Seeder
             'min_hours' => 8,
             'capacity' => 22,
             'location' => 'Galpão B',
-            'validity_dt' => '2028-09-18',
+            'validity_months' => 24,
         ]);
 
         SessionTraining::create([
@@ -93,7 +93,7 @@ class SessionTrainingSeeder extends Seeder
             'min_hours' => 4,
             'capacity' => 30,
             'location' => 'Pátio central',
-            'validity_dt' => '2027-09-10',
+            'validity_months' => 12,
         ]);
 
         SessionTraining::create([
@@ -107,7 +107,7 @@ class SessionTrainingSeeder extends Seeder
             'min_hours' => 16,
             'capacity' => 10,
             'location' => 'Depósito',
-            'validity_dt' => '2027-08-28',
+            'validity_months' => 12,
         ]);
     }
 }

@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Permission;
+use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -44,7 +47,18 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Cria um usuário cujo cargo, com o status informado, tem exatamente as permissões dos slugs.
+ */
+function userWithPermissions(string $status = 'ativo', string ...$slugs): User
 {
-    // ..
+    $role = UserRole::create(['title' => 'cargo', 'status' => $status]);
+
+    foreach ($slugs as $slug) {
+        $role->rolePermissions()->attach(
+            Permission::firstOrCreate(['slug' => $slug], ['name' => $slug])
+        );
+    }
+
+    return User::factory()->create(['user_role_id' => $role->id]);
 }

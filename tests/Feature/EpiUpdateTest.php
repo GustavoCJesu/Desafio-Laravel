@@ -2,7 +2,6 @@
 
 use App\Models\Category;
 use App\Models\Epi;
-use App\Models\User;
 
 test('updating an epi changes the existing record instead of creating a new one', function () {
     $category = Category::forceCreate(['name' => 'Proteção da cabeça']);
@@ -14,7 +13,7 @@ test('updating an epi changes the existing record instead of creating a new one'
         'status' => 'Ativo',
     ]);
 
-    $response = $this->actingAs(User::factory()->create())
+    $response = $this->actingAs(userWithPermissions('ativo', 'epis.update'))
         ->put(route('epi.update', ['epi' => $epi->id]), [
             'name' => 'Luva nitrílica',
             'ca' => '54321',
@@ -40,7 +39,7 @@ test('showing an epi returns the requested record as json', function () {
         'status' => 'Ativo',
     ]);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(userWithPermissions('ativo', 'epis.view'))
         ->getJson(route('epi.show', ['epi' => $epi->id]))
         ->assertOk()
         ->assertJson(['id' => $epi->id, 'name' => 'Capacete']);

@@ -5,18 +5,22 @@
     $sections = [
         'Geral' => [
             ['route' => 'dashboard', 'match' => 'dashboard', 'icon' => 'layout-dashboard', 'label' => 'Painel'],
-            ['route' => 'report.index', 'match' => 'report.*', 'icon' => 'bar-chart-3', 'label' => 'Relatórios'],
+            ['route' => 'report.index', 'match' => 'report.*', 'icon' => 'bar-chart-3', 'label' => 'Relatórios', 'can' => 'reports.view'],
         ],
         'Pessoas' => [
-            ['route' => 'employees.index', 'match' => 'employees.*', 'icon' => 'users', 'label' => 'Funcionários'],
+            ['route' => 'employees.index', 'match' => 'employees.*', 'icon' => 'users', 'label' => 'Funcionários', 'can' => 'employees.view'],
             ['route' => 'position.index', 'match' => 'position.*', 'icon' => 'briefcase', 'label' => 'Cargos'],
         ],
         'Segurança' => [
-            ['route' => 'epi.index', 'match' => 'epi.*', 'icon' => 'hard-hat', 'label' => 'EPIs'],
-            ['route' => 'training.index', 'match' => 'training.*', 'icon' => 'graduation-cap', 'label' => 'Aulas'],
+            ['route' => 'epi.index', 'match' => 'epi.*', 'icon' => 'hard-hat', 'label' => 'EPIs', 'can' => 'epis.view'],
+            ['route' => 'training.index', 'match' => 'training.*', 'icon' => 'graduation-cap', 'label' => 'Aulas', 'can' => 'trainings.view'],
             ['route' => 'certificate.index', 'match' => 'certificate.*', 'icon' => 'award', 'label' => 'Certificados'],
         ],
     ];
+
+    $sections = collect($sections)
+        ->map(fn (array $links) => array_filter($links, fn (array $link) => ! isset($link['can']) || $user->can($link['can'])))
+        ->filter();
 @endphp
 
 <aside id="sidebar"

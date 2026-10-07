@@ -13,9 +13,11 @@
         <a href="{{ route('employees.index') }}" class="btn btn-secondary">
             <i data-lucide="arrow-left"></i><span class="hidden sm:inline">Voltar</span>
         </a>
-        <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}" class="btn btn-primary">
-            <i data-lucide="pencil"></i><span class="hidden sm:inline">Editar</span>
-        </a>
+        @can('employees.update')
+            <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}" class="btn btn-primary">
+                <i data-lucide="pencil"></i><span class="hidden sm:inline">Editar</span>
+            </a>
+        @endcan
     </x-slot:actions>
 
     <div class="mx-auto flex max-w-5xl flex-col gap-6">
@@ -86,9 +88,11 @@
                     <div class="flex flex-col items-center p-8 text-center">
                         <i data-lucide="user-round-x" class="size-8 text-slate-300"></i>
                         <p class="mt-2 text-sm text-slate-500">Este funcionário não possui usuário no sistema.</p>
-                        <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}" class="btn btn-secondary btn-sm mt-4">
-                            Criar usuário
-                        </a>
+                        @can('employees.update')
+                            <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}" class="btn btn-secondary btn-sm mt-4">
+                                Criar usuário
+                            </a>
+                        @endcan
                     </div>
                 @endif
             </div>

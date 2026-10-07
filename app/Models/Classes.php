@@ -12,11 +12,13 @@ class Classes extends Model
     protected $fillable = [
         'session_training_id',
         'class_dt',
+        'duration_hours',
         'status',
     ];
 
     protected $casts = [
         'class_dt' => 'datetime',
+        'duration_hours' => 'float',
     ];
 
     public function attendanceSession(): HasMany

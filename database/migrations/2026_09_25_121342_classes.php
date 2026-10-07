@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(SessionTraining::class)->constrained('session_trainings');
             $table->date('class_dt');
+            $table->decimal('duration_hours', 4, 2);
             $table->timestamps();
         });
     }

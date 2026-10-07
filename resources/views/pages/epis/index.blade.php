@@ -4,14 +4,20 @@
 
 <x-layouts.app title="EPIs" subtitle="Equipamentos de proteção individual cadastrados" icon="hard-hat">
     <x-slot:modals>
-        <x-modals.epi-create :categories="$categories" />
-        <x-modals.epi-edit :categories="$categories" />
+        @can('epis.create')
+            <x-modals.epi-create :categories="$categories" />
+        @endcan
+        @can('epis.update')
+            <x-modals.epi-edit :categories="$categories" />
+        @endcan
     </x-slot:modals>
 
     <x-slot:actions>
-        <button type="button" onclick="toggleModal('epimodal')" class="btn btn-primary">
-            <i data-lucide="plus"></i><span class="hidden sm:inline">Adicionar EPI</span>
-        </button>
+        @can('epis.create')
+            <button type="button" onclick="toggleModal('epimodal')" class="btn btn-primary">
+                <i data-lucide="plus"></i><span class="hidden sm:inline">Adicionar EPI</span>
+            </button>
+        @endcan
     </x-slot:actions>
 
     <div class="flex flex-col gap-6">
@@ -55,30 +61,34 @@
                                 </td>
                                 <td>
                                     <div class="flex items-center justify-end gap-2">
-                                        <button type="button" onclick="editEpi({{ $epi->id }})" class="icon-btn"
-                                            title="Editar">
-                                            <i data-lucide="pencil"></i>
-                                        </button>
-                                        <form action="{{ route('epi.toggle', $epi->id) }}" method="POST">
-                                            @csrf
-                                            @if ($epi->status === 'Ativo')
-                                                <button type="submit" class="btn btn-warning-soft btn-sm" title="Desativar">
-                                                    <i data-lucide="power-off"></i>
-                                                </button>
-                                            @else
-                                                <button type="submit" class="btn btn-success-soft btn-sm" title="Ativar">
-                                                    <i data-lucide="power"></i>
-                                                </button>
-                                            @endif
-                                        </form>
-                                        <form action="{{ route('epi.delete', $epi->id) }}" method="POST"
-                                            onsubmit="return confirm('Deseja excluir este EPI?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
-                                                <i data-lucide="trash-2"></i>
+                                        @can('epis.update')
+                                            <button type="button" onclick="editEpi({{ $epi->id }})" class="icon-btn"
+                                                title="Editar">
+                                                <i data-lucide="pencil"></i>
                                             </button>
-                                        </form>
+                                            <form action="{{ route('epi.toggle', $epi->id) }}" method="POST">
+                                                @csrf
+                                                @if ($epi->status === 'Ativo')
+                                                    <button type="submit" class="btn btn-warning-soft btn-sm" title="Desativar">
+                                                        <i data-lucide="power-off"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="submit" class="btn btn-success-soft btn-sm" title="Ativar">
+                                                        <i data-lucide="power"></i>
+                                                    </button>
+                                                @endif
+                                            </form>
+                                        @endcan
+                                        @can('epis.delete')
+                                            <form action="{{ route('epi.delete', $epi->id) }}" method="POST"
+                                                onsubmit="return confirm('Deseja excluir este EPI?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
+                                                    <i data-lucide="trash-2"></i>
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
