@@ -17,6 +17,10 @@ Route::post('/login', [LoginController::class, 'authenticated'])->name('login');
 
 Route::middleware('auth')->group(function () {
 
+    Route::middleware('can:employees.update')->group(function(){
+
+    });
+
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index')->middleware('can:employees.view');
     Route::get('/employee/profile/{id}', [EmployeeController::class, 'show'])->name('employees.profile')->middleware('can:employees.view');
@@ -59,11 +63,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/aula/{sessionTraining}/attendance/', [SessionTrainingController::class, 'attendanceSession'])->name('training.attendance')->middleware('can:trainings.update');
 
     // Telas com dados estáticos (protótipos de interface)
-    Route::view('/painel', 'pages.dashboard')->name('dashboard');
 
     Route::get('/certificados', [CertificateController::class, 'index'])->name('certificate.index');
     Route::post('/cerificate/issue/{Session}', [CertificateController::class, 'store'])->name('certificate.store')->middleware('can:certificates.allow');
 
     Route::get('/relatorios', [ReportController::class, 'index'])->name('report.index')->middleware('can:reports.view');
+    Route::get('/relatorios/conformidade', [ReportController::class, 'compliance'])->name('report.compliance')->middleware('can:reports.create');
+    Route::get('/relatorios/conformidade/exportar', [ReportController::class, 'complianceExport'])->name('report.compliance.export')->middleware('can:reports.export');
 
 });

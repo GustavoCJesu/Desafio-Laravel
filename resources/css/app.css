@@ -268,4 +268,24 @@
     .no-print {
         display: none !important;
     }
+
+    @page {
+        size: A4;
+        margin: 12mm;
+    }
+
+    body {
+        background: #fff;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .print-avoid-break,
+    .data-table tr {
+        break-inside: avoid;
+    }
+
+    .data-table thead {
+        display: table-header-group;
+    }
 }

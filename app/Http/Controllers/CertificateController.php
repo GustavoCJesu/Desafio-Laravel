@@ -18,10 +18,10 @@ class CertificateController extends Controller
      */
     public function index(): View
     {
-        $certificates = Certificate::with(['employee', 'sessionTraining', 'instructor'])
+        $certificates = Certificate::with(['employee', 'sessionTraining', 'instructor', 'epis'])
             ->latest('confirmed_at')
             ->get()
-            ->map(fn (Certificate $certificate) => ['code' => sprintf('CERT-%s-%04d', $certificate->confirmed_at->format('Y'), $certificate->id), 'employee' => $certificate->employee->name, 'registration' => $certificate->employee->registration, 'course' => $certificate->sessionTraining->norm.' '.$certificate->sessionTraining->title, 'hours' => $certificate->sessionTraining->class_min, 'instructor' => $certificate->instructor->name, 'confirmed_at' => $certificate->confirmed_at->format('d/m/Y'), 'expires_at' => $certificate->expires_at->format('d/m/Y'), 'status' => $this->statusFor($certificate->expires_at)]);
+            ->map(fn (Certificate $certificate) => ['code' => sprintf('CERT-%s-%04d', $certificate->confirmed_at->format('Y'), $certificate->id), 'employee' => $certificate->employee->name, 'registration' => $certificate->employee->registration, 'course' => $certificate->sessionTraining->norm.' '.$certificate->sessionTraining->title, 'hours' => $certificate->sessionTraining->class_min, 'epis' => $certificate->epis->pluck('name')->all(), 'instructor' => $certificate->instructor->name, 'confirmed_at' => $certificate->confirmed_at->format('d/m/Y'), 'expires_at' => $certificate->expires_at->format('d/m/Y'), 'status' => $this->statusFor($certificate->expires_at)]);
 
         $counts = $certificates->countBy('status');
 

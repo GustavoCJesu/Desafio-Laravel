@@ -38,11 +38,16 @@
 
 <x-layouts.app title="Relatórios" subtitle="Indicadores de pessoas, treinamentos e EPIs" icon="bar-chart-3">
     <x-slot:actions>
+        @can('reports.create')
+            <a href="{{ route('report.compliance') }}" class="btn btn-primary no-print">
+                <i data-lucide="file-check-2"></i><span class="hidden sm:inline">Relatório de conformidade</span>
+            </a>
+        @endcan
         <button type="button" onclick="window.print()" class="btn btn-secondary no-print">
             <i data-lucide="printer"></i><span class="hidden sm:inline">Imprimir</span>
         </button>
         @can('reports.export')
-            <button type="button" class="btn btn-primary no-print">
+            <button type="button" class="btn btn-secondary no-print">
                 <i data-lucide="download"></i><span class="hidden sm:inline">Exportar</span>
             </button>
         @endcan

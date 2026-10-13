@@ -41,4 +41,16 @@ class Certificate extends Model
     {
         return $this->belongsToMany(Epi::class, 'certificate_epis', 'certificate_id', 'epi_id')->withTimestamps();
     }
+
+    /**
+     * Situação pela data de validade: Vencido, A vencer (até 60 dias) ou Válido.
+     */
+    public function currentStatus(): string
+    {
+        if ($this->expires_at->isPast()) {
+            return 'Vencido';
+        }
+
+        return now()->diffInDays($this->expires_at) <= 60 ? 'A vencer' : 'Válido';
+    }
 }

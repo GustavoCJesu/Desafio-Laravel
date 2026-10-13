@@ -3,37 +3,38 @@
 namespace Database\Seeders;
 
 use App\Models\UserRole;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class UserRoleSeeder extends Seeder {
+class UserRoleSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      */
-    public function run(): void {
+    public function run(): void
+    {
         UserRole::create([
             'title' => 'admin',
-            'status' => 'ativo'
+            'status' => 'ativo',
         ]);
 
         UserRole::create([
             'title' => 'gestor',
-            'status' => 'ativo'
+            'status' => 'ativo',
         ]);
 
         UserRole::create([
             'title' => 'colaborador',
-            'status' => 'ativo'
+            'status' => 'ativo',
         ]);
 
         UserRole::create([
             'title' => 'supervisor',
-            'status' => 'ativo'
+            'status' => 'ativo',
         ]);
 
         UserRole::create([
             'title' => 'visualizador',
-            'status' => 'ativo'
+            'status' => 'ativo',
         ]);
 
         // Schema::create('user_roles', function (Blueprint $table) {

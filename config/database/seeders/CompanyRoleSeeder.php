@@ -3,14 +3,15 @@
 namespace Database\Seeders;
 
 use App\Models\CompanyRole;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class CompanyRoleSeeder extends Seeder {
+class CompanyRoleSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      */
-    public function run(): void {
+    public function run(): void
+    {
         CompanyRole::create([
             'title' => 'Auxiliar de compras',
             'status' => 'Ativo',

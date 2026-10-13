@@ -3,10 +3,6 @@
     $userName = $user->employee->name ?? 'Usuário';
 
     $sections = [
-        'Geral' => [
-            ['route' => 'dashboard', 'match' => 'dashboard', 'icon' => 'layout-dashboard', 'label' => 'Painel'],
-            ['route' => 'report.index', 'match' => 'report.*', 'icon' => 'bar-chart-3', 'label' => 'Relatórios', 'can' => 'reports.view'],
-        ],
         'Pessoas' => [
             ['route' => 'employees.index', 'match' => 'employees.*', 'icon' => 'users', 'label' => 'Funcionários', 'can' => 'employees.view'],
             ['route' => 'position.index', 'match' => 'position.*', 'icon' => 'briefcase', 'label' => 'Cargos'],
@@ -15,6 +11,9 @@
             ['route' => 'epi.index', 'match' => 'epi.*', 'icon' => 'hard-hat', 'label' => 'EPIs', 'can' => 'epis.view'],
             ['route' => 'training.index', 'match' => 'training.*', 'icon' => 'graduation-cap', 'label' => 'Aulas', 'can' => 'trainings.view'],
             ['route' => 'certificate.index', 'match' => 'certificate.*', 'icon' => 'award', 'label' => 'Certificados'],
+        ],
+        'Relatórios' => [
+            ['route' => 'report.compliance', 'match' => 'report.compliance*', 'icon' => 'file-check-2', 'label' => 'Conformidade', 'can' => 'reports.create'],
         ],
     ];
 

@@ -48,3 +48,11 @@ test('the pages with permission checks render for a role that has every permissi
         ->get(route($routeName))
         ->assertOk();
 })->with(['dashboard', 'employees.index', 'training.index', 'epi.index', 'report.index']);
+
+test('the sidebar links the compliance report only to roles that can create reports', function () {
+    $withPermission = $this->actingAs(userWithPermissions('ativo', 'epis.view', 'reports.create'))->get(route('epi.index'));
+    $withPermission->assertSee(route('report.compliance'), false);
+
+    $withoutPermission = $this->actingAs(userWithPermissions('ativo', 'epis.view', 'reports.view'))->get(route('epi.index'));
+    $withoutPermission->assertDontSee(route('report.compliance'), false);
+});

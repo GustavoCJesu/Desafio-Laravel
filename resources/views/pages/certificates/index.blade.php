@@ -33,6 +33,11 @@
                         <b class="text-slate-900" data-cert="course"></b>,
                         com carga horária de <b class="text-slate-900"><span data-cert="hours"></span> horas</b>.
                     </p>
+                    <div class="mx-auto mt-5 max-w-md text-left">
+                        <p class="text-center text-xs font-semibold tracking-wider text-brand-500 uppercase">EPIs abordados no treinamento</p>
+                        <ul id="certificate-epis" class="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 text-sm text-slate-700 sm:grid-cols-2"></ul>
+                        <p id="certificate-epis-empty" class="mt-2 hidden text-center text-sm text-slate-400">Nenhum EPI vinculado a este treinamento.</p>
+                    </div>
                     <div class="mt-10 grid grid-cols-2 gap-8 text-xs text-slate-500">
                         <div class="border-t border-slate-300 pt-2">
                             Emitido em <span class="font-semibold text-slate-700" data-cert="confirmed_at"></span>
@@ -156,6 +161,15 @@
             document.querySelectorAll('[data-cert]').forEach((field) => {
                 field.textContent = certificate[field.dataset.cert];
             });
+
+            const episList = document.getElementById('certificate-epis');
+            episList.replaceChildren(...certificate.epis.map((name) => {
+                const item = document.createElement('li');
+                item.className = 'flex items-center gap-2 before:size-1.5 before:shrink-0 before:rounded-full before:bg-brand-500';
+                item.textContent = name;
+                return item;
+            }));
+            document.getElementById('certificate-epis-empty').classList.toggle('hidden', certificate.epis.length > 0);
             toggleModal('certificateModal');
         }
 
