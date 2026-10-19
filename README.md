@@ -34,6 +34,7 @@ O acesso é controlado por cargo (`user_roles`), que possui um conjunto de permi
 | EPIs | `epis.view`, `epis.create`, `epis.update`, `epis.delete` |
 | Relatórios | `reports.view`, `reports.create`, `reports.delete`, `reports.export` |
 | Certificados | `certificates.allow` |
+| Cargos | `positions.create`, `positions.update`, `positions.delete` |
 
 Como funciona:
 
@@ -42,7 +43,7 @@ Como funciona:
 - As rotas em `routes/web.php` são protegidas com `->middleware('can:<slug>')`. Sem permissão, a resposta é 403.
 - As views usam `@can('<slug>')` para esconder botões, links e itens do menu. Isso é só interface: quem protege de verdade são as rotas.
 
-Ainda sem permissão própria, e portanto liberadas a qualquer usuário autenticado: painel, cargos e a listagem de certificados.
+Ainda sem permissão própria, e portanto liberadas a qualquer usuário autenticado: a listagem de cargos e a listagem de certificados.
 
 Para criar uma permissão nova, adicione o par `name`/`slug` em `database/seeders/PermissionsSeeder.php`, vincule-a aos cargos em `RolePermissionSeeder` e proteja a rota com `can:<slug>`. A ordem do seeder importa, porque o `RolePermissionSeeder` referencia as permissões pelo id.
 

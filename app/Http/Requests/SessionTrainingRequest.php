@@ -27,7 +27,7 @@ class SessionTrainingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'norm' => 'required|string|max:10',
+            'norm' => 'nullable|string|max:10',
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'instructor_id' => 'required|exists:employees,id',
@@ -81,7 +81,6 @@ class SessionTrainingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'norm.required' => 'A norma é obrigatória.',
             'norm.max' => 'A norma deve ter no máximo 10 caracteres.',
             'title.required' => 'O título é obrigatório.',
             'description.required' => 'A descrição é obrigatória.',

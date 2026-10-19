@@ -48,12 +48,6 @@ class User extends Authenticatable
         return in_array($slug, $this->permissionSlugs(), true);
     }
 
-    /**
-     * Slugs liberados pelo cargo do usuário, carregados uma única vez por instância.
-     * Usuário sem cargo, ou com cargo inativo, não tem permissão alguma.
-     *
-     * @return array<int, string>
-     */
     private function permissionSlugs(): array
     {
         if ($this->permissionSlugs !== null) {

@@ -49,6 +49,19 @@ class SessionTraining extends Model
     }
 
     /**
+     * Horas das aulas concluídas em que o funcionário compareceu.
+     */
+    public function attendedHoursFor(Employee $employee): float
+    {
+        return (float) $this->classes()
+            ->where('status', 'Concluído')
+            ->whereHas('attendanceSession', fn ($query) => $query
+                ->where('employee_id', $employee->id)
+                ->where('employee_attendance', 'Compareceu'))
+            ->sum('duration_hours');
+    }
+
+    /**
      * Marks the training as concluded once every planned class is concluded,
      * and reopens it if that is no longer true. Cancelled trainings are kept.
      */

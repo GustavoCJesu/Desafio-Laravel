@@ -24,7 +24,7 @@ class EmployeeSeeder extends Seeder
         ]);
 
         Employee::create([
-            'company_role_id' => 2,
+            'company_role_id' => 11,
             'sector_id' => 1,
             'registration' => '4831-7',
             'name' => 'Mariana Alves Costa',
@@ -34,7 +34,7 @@ class EmployeeSeeder extends Seeder
         ]);
 
         Employee::create([
-            'company_role_id' => 3,
+            'company_role_id' => 11,
             'sector_id' => 2,
             'registration' => '6312-4',
             'name' => 'Rafael Henrique Souza',
@@ -44,7 +44,7 @@ class EmployeeSeeder extends Seeder
         ]);
 
         Employee::create([
-            'company_role_id' => 4,
+            'company_role_id' => 11,
             'sector_id' => 3,
             'registration' => '7145-9',
             'name' => 'Camila Fernanda Lima',
@@ -64,7 +64,7 @@ class EmployeeSeeder extends Seeder
         ]);
 
         Employee::create([
-            'company_role_id' => 6,
+            'company_role_id' => 11,
             'sector_id' => 5,
             'registration' => '8294-1',
             'name' => 'Fernanda Cristina Oliveira',

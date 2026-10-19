@@ -43,12 +43,6 @@ function toggleModal(id) {
     modal.classList.toggle('flex');
 }
 
-function selectEmployee(row) {
-    const radio = row.querySelector('input[type="radio"]');
-
-    radio.checked = true;
-}
-
 function sendForm() {
     document.getElementById('filter').requestSubmit();
 }
@@ -75,7 +69,6 @@ function initToasts() {
 }
 
 window.toggleModal = toggleModal;
-window.selectEmployee = selectEmployee;
 window.sendForm = sendForm;
 window.closeMessage = closeMessage;
 

@@ -97,6 +97,11 @@ class RolePermissionSeeder extends Seeder
             'permission_id' => 17,
         ]);
 
+        RolePermission::create(['user_role_id' => 1, 'permission_id' => 18]);
+        RolePermission::create(['user_role_id' => 1, 'permission_id' => 19]);
+        RolePermission::create(['user_role_id' => 1, 'permission_id' => 20]);
+        RolePermission::create(['user_role_id' => 1, 'permission_id' => 21]);
+
         RolePermission::create(['user_role_id' => 2, 'permission_id' => 1]);
         RolePermission::create(['user_role_id' => 2, 'permission_id' => 2]);
         RolePermission::create(['user_role_id' => 2, 'permission_id' => 3]);
@@ -187,6 +192,11 @@ class RolePermissionSeeder extends Seeder
             'user_role_id' => 5,
             'permission_id' => 14,
         ]);
+
+        // Professor: cria e gerencia aulas (5 a 8) e consulta funcionários (1) e EPIs (10).
+        foreach ([1, 5, 6, 7, 8, 10] as $permissionId) {
+            RolePermission::create(['user_role_id' => 6, 'permission_id' => $permissionId]);
+        }
 
         // Schema::create('role_permissions', function (Blueprint $table) {
         //     $table->id();

@@ -32,6 +32,10 @@ class PermissionsSeeder extends Seeder
             ['name' => 'Criar relatórios', 'slug' => 'reports.create'],
             ['name' => 'Apagar relatórios', 'slug' => 'reports.delete'],
             ['name' => 'Exportar relatórios', 'slug' => 'reports.export'],
+            ['name' => 'Ver cargos', 'slug' => 'positions.view'],
+            ['name' => 'Criar cargos', 'slug' => 'positions.create'],
+            ['name' => 'Editar cargos', 'slug' => 'positions.update'],
+            ['name' => 'Apagar cargos', 'slug' => 'positions.delete'],
         ];
 
         foreach ($permissions as $permission) {

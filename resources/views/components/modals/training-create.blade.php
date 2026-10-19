@@ -17,7 +17,8 @@
         <div class="grid gap-4 px-6 py-5 sm:grid-cols-2">
             <div>
                 <label class="form-label" for="training_norm">Norma</label>
-                <select id="training_norm" name="norm" required class="form-input">
+                <select id="training_norm" name="norm" class="form-input">
+                    <option value="">Sem norma</option>
                     @foreach ($norms as $code => $name)
                         <option value="{{ $code }}">{{ $code }} · {{ $name }}</option>
                     @endforeach

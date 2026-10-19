@@ -45,5 +45,9 @@ test('every protected route requires the expected permission slug', function (st
     ['training.delete', 'trainings.delete'],
     ['training.attendance', 'trainings.update'],
     ['certificate.store', 'certificates.allow'],
+    ['position.index', 'positions.view'],
+    ['position.create', 'positions.create'],
+    ['position.update', 'positions.update'],
+    ['position.delete', 'positions.delete'],
     ['report.index', 'reports.view'],
 ]);

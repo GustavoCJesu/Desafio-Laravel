@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +33,24 @@ class Employee extends Model
         'status',
         'registration',
     ];
+
+    public const INSTRUCTOR_ROLE_TITLE = 'Professor';
+
+    /**
+     * Funcionários ativos com o cargo de professor, mais o instrutor atual (se informado)
+     * para que uma aula antiga não perca o instrutor ao ser editada.
+     */
+    public function scopeInstructors(Builder $query, ?int $currentInstructorId = null): void
+    {
+        $query->where(function (Builder $query) use ($currentInstructorId) {
+            $query->where('status', 'Ativo')
+                ->whereHas('companyRole', fn (Builder $role) => $role->where('title', self::INSTRUCTOR_ROLE_TITLE));
+
+            if ($currentInstructorId !== null) {
+                $query->orWhere('id', $currentInstructorId);
+            }
+        });
+    }
 
     public function sector(): BelongsTo
     {

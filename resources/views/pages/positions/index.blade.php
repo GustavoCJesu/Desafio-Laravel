@@ -1,15 +1,21 @@
 <x-layouts.app title="Cargos do sistema" subtitle="Funções de acesso e suas permissões" icon="briefcase">
     <x-slot:modals>
-        <x-modals.position-create :grouped="$grouped" />
-        @foreach ($positions as $position)
-            <x-modals.position-edit :position="$position" :grouped="$grouped" />
-        @endforeach
+        @can('positions.create')
+            <x-modals.position-create :grouped="$grouped" />
+        @endcan
+        @can('positions.update')
+            @foreach ($positions as $position)
+                <x-modals.position-edit :position="$position" :grouped="$grouped" />
+            @endforeach
+        @endcan
     </x-slot:modals>
 
     <x-slot:actions>
-        <button type="button" onclick="toggleModal('positionModal')" class="btn btn-primary">
-            <i data-lucide="plus"></i><span class="hidden sm:inline">Criar novo cargo</span>
-        </button>
+        @can('positions.create')
+            <button type="button" onclick="toggleModal('positionModal')" class="btn btn-primary">
+                <i data-lucide="plus"></i><span class="hidden sm:inline">Criar novo cargo</span>
+            </button>
+        @endcan
     </x-slot:actions>
 
     <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -32,6 +38,10 @@
                 </div>
 
                 <div class="px-5 pb-5">
+                    <div class="mb-3 flex items-center justify-between text-xs text-slate-500">
+                        <span class="flex items-center gap-1.5"><i data-lucide="users" class="size-3.5"></i>Funcionários</span>
+                        <span class="font-semibold text-slate-700">{{ $position->user_count }}</span>
+                    </div>
                     <div class="flex items-center justify-between text-xs text-slate-500">
                         <span>Permissões</span>
                         <span class="font-semibold text-slate-700">{{ $permissionCount }}</span>
@@ -42,27 +52,35 @@
                     </div>
                 </div>
 
-                <div class="mt-auto flex gap-2 border-t border-slate-100 px-5 py-3">
-                    <button type="button" onclick="toggleModal('editPositionModal-{{ $position->id }}')"
-                        class="btn btn-secondary btn-sm flex-1">
-                        <i data-lucide="pencil"></i>Editar
-                    </button>
-                    <form action="{{ route('position.delete', $position->id) }}" method="POST"
-                        onsubmit="return confirm('Deseja excluir este cargo?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </form>
-                </div>
+                @canany(['positions.update', 'positions.delete'])
+                    <div class="mt-auto flex gap-2 border-t border-slate-100 px-5 py-3">
+                        @can('positions.update')
+                            <button type="button" onclick="toggleModal('editPositionModal-{{ $position->id }}')"
+                                class="btn btn-secondary btn-sm flex-1">
+                                <i data-lucide="pencil"></i>Editar
+                            </button>
+                        @endcan
+                        @can('positions.delete')
+                            <form action="{{ route('position.delete', $position->id) }}" method="POST"
+                                onsubmit="return confirm('Deseja excluir este cargo?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger-soft btn-sm" title="Excluir">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </form>
+                        @endcan
+                    </div>
+                @endcanany
             </div>
         @endforeach
 
-        <button type="button" onclick="toggleModal('positionModal')"
-            class="flex min-h-48 flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 transition hover:border-accent-500 hover:bg-white hover:text-accent-600">
-            <i data-lucide="plus-circle" class="size-8"></i>
-            <span class="text-sm font-medium">Novo cargo</span>
-        </button>
+        @can('positions.create')
+            <button type="button" onclick="toggleModal('positionModal')"
+                class="flex min-h-48 flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 transition hover:border-accent-500 hover:bg-white hover:text-accent-600">
+                <i data-lucide="plus-circle" class="size-8"></i>
+                <span class="text-sm font-medium">Novo cargo</span>
+            </button>
+        @endcan
     </div>
 </x-layouts.app>

@@ -34,7 +34,7 @@ class SessionTrainingController extends Controller
             ->orderBy('id')
             ->paginate(6);
 
-        $instructors = Employee::get();
+        $instructors = Employee::instructors()->select('id', 'name')->orderBy('name')->get();
         $scheduled = SessionTraining::where('status', 'Agendado')->count();
         $completed = SessionTraining::where('status', 'Concluído')->count();
         $cancelled = SessionTraining::where('status', 'Cancelado')->count();
@@ -79,6 +79,7 @@ class SessionTrainingController extends Controller
         $training = $sessionTraining->load(['epis', 'classes', 'employees']);
         $employees = Employee::with('sector', 'trainings', 'classes')->where('status', '=', 'Ativo')->orderBy('name')->get();
         $epis = Epi::with('category')->where('status', 'Ativo')->orderBy('name')->get();
+        $instructors = Employee::instructors($sessionTraining->instructor_id)->select('id', 'name')->orderBy('name')->get();
         $sessionEmployees = $sessionTraining->employees->select('registration', 'name')->toArraY();
 
         // dd($sessionEmployees);
@@ -101,7 +102,7 @@ class SessionTrainingController extends Controller
 
         // dd($certificateCandidates);
 
-        return view('pages.trainings.edit', compact('training', 'employees', 'epis', 'certificateCandidates', 'sessionEmployees'));
+        return view('pages.trainings.edit', compact('training', 'employees', 'instructors', 'epis', 'certificateCandidates', 'sessionEmployees'));
     }
 
     public function update(SessionTrainingRequest $request, SessionTraining $sessionTraining)

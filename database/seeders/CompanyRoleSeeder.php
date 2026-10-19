@@ -61,5 +61,10 @@ class CompanyRoleSeeder extends Seeder
             'title' => 'Gerente administrativo',
             'status' => 'Ativo',
         ]);
+
+        CompanyRole::create([
+            'title' => 'Professor',
+            'status' => 'Ativo',
+        ]);
     }
 }

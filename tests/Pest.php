@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\CompanyRole;
+use App\Models\Employee;
 use App\Models\Permission;
+use App\Models\Sector;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -61,4 +64,18 @@ function userWithPermissions(string $status = 'ativo', string ...$slugs): User
     }
 
     return User::factory()->create(['user_role_id' => $role->id]);
+}
+
+/**
+ * Cria um funcionário ativo com cargo e setor próprios, sem depender de registros já existentes.
+ *
+ * @param  array<string, mixed>  $attributes
+ */
+function createEmployee(array $attributes = []): Employee
+{
+    return Employee::factory()->create(array_merge([
+        'company_role_id' => CompanyRole::factory(),
+        'sector_id' => Sector::factory(),
+        'status' => 'Ativo',
+    ], $attributes));
 }

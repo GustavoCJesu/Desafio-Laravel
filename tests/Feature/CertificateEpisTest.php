@@ -2,14 +2,13 @@
 
 use App\Models\Category;
 use App\Models\Certificate;
-use App\Models\Employee;
 use App\Models\Epi;
 use App\Models\SessionTraining;
 use App\Models\User;
 
 function issuedCertificateWithEpis(array $epiNames): Certificate
 {
-    $instructor = Employee::factory()->create();
+    $instructor = createEmployee();
     $training = SessionTraining::forceCreate([
         'instructor_id' => $instructor->id,
         'norm' => 'NR-35',
@@ -26,7 +25,7 @@ function issuedCertificateWithEpis(array $epiNames): Certificate
 
     $certificate = Certificate::create([
         'instructor_id' => $instructor->id,
-        'employee_id' => Employee::factory()->create()->id,
+        'employee_id' => createEmployee()->id,
         'session_training_id' => $training->id,
         'confirmed_at' => now(),
         'expires_at' => now()->addYear(),

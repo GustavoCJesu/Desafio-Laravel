@@ -19,7 +19,7 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
 
-        $employees = Employee::query()
+        $filtered = Employee::query()
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%'.$search.'%');
             })
@@ -28,14 +28,21 @@ class EmployeeController extends Controller
             })
             ->when($request->sector, function ($query, $sector) {
                 $query->where('sector_id', $sector);
-            })
-            ->get();
+            });
+
+        $statusCounts = (clone $filtered)->reorder()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status');
+
+        $employees = $filtered
+            ->with(['sector', 'companyRole', 'user'])
+            ->orderBy('id')
+            ->paginate(10)
+            ->withQueryString();
 
         $search = $request->search;
         $sectors = Sector::whereHas('employee')->get();
         $roles = CompanyRole::whereHas('employee')->get();
 
-        return view('pages.employees.index', compact('employees', 'search', 'sectors', 'roles'));
+        return view('pages.employees.index', compact('employees', 'statusCounts', 'search', 'sectors', 'roles'));
     }
 
     public function edit(int $id): View

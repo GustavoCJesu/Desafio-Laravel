@@ -53,13 +53,17 @@
                         <div class="flex items-start gap-3">
                             <div
                                 class="bg-gradient-primary flex size-12 shrink-0 flex-col items-center justify-center rounded-xl text-white">
-                                <span class="text-[10px] leading-none opacity-80">{{ $training->norm }}</span>
-                                <span
-                                    class="text-base leading-tight font-bold">{{ preg_replace('/[^0-9]/', '', $training->norm) }}</span>
+                                @if ($training->norm)
+                                    <span class="text-[10px] leading-none opacity-80">{{ $training->norm }}</span>
+                                    <span
+                                        class="text-base leading-tight font-bold">{{ preg_replace('/[^0-9]/', '', $training->norm) }}</span>
+                                @else
+                                    <i data-lucide="graduation-cap" class="size-5"></i>
+                                @endif
                             </div>
                             <div>
                                 <h3 class="font-semibold text-slate-900">{{ $training->title }}</h3>
-                                <p class="text-xs text-slate-500">{{ $training->norm }} · {{ $training->class_min }}h</p>
+                                <p class="text-xs text-slate-500">{{ $training->norm ? $training->norm.' · ' : '' }}{{ $training->class_min }}h</p>
                             </div>
                         </div>
                         <span class="badge {{ $statusBadges[$training->status] ?? 'badge-neutral' }}">{{ $training->status }}</span>

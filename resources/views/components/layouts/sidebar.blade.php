@@ -5,7 +5,7 @@
     $sections = [
         'Pessoas' => [
             ['route' => 'employees.index', 'match' => 'employees.*', 'icon' => 'users', 'label' => 'Funcionários', 'can' => 'employees.view'],
-            ['route' => 'position.index', 'match' => 'position.*', 'icon' => 'briefcase', 'label' => 'Cargos'],
+            ['route' => 'position.index', 'match' => 'position.*', 'icon' => 'briefcase', 'label' => 'Cargos', 'can' => 'positions.view'],
         ],
         'Segurança' => [
             ['route' => 'epi.index', 'match' => 'epi.*', 'icon' => 'hard-hat', 'label' => 'EPIs', 'can' => 'epis.view'],

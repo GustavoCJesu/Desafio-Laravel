@@ -25,17 +25,16 @@ test('the sidebar hides the links of modules the role cannot view', function () 
     $response = $this->actingAs(userWithPermissions('ativo', 'epis.view'))->get(route('epi.index'));
 
     $response->assertSee(route('epi.index'))
-        ->assertSee(route('dashboard'))
-        ->assertDontSee(route('report.index'))
         ->assertDontSee(route('employees.index'))
-        ->assertDontSee(route('training.index'));
+        ->assertDontSee(route('training.index'))
+        ->assertDontSee(route('report.compliance'));
 });
 
 test('the sidebar shows every module link to a role with all view permissions', function () {
-    $response = $this->actingAs(userWithPermissions('ativo', 'epis.view', 'reports.view', 'employees.view', 'trainings.view'))
+    $response = $this->actingAs(userWithPermissions('ativo', 'epis.view', 'reports.create', 'employees.view', 'trainings.view'))
         ->get(route('epi.index'));
 
-    $response->assertSee(route('report.index'))
+    $response->assertSee(route('report.compliance'))
         ->assertSee(route('employees.index'))
         ->assertSee(route('training.index'));
 });
@@ -47,7 +46,7 @@ test('the pages with permission checks render for a role that has every permissi
     $this->actingAs(userWithPermissions('ativo', ...$slugs))
         ->get(route($routeName))
         ->assertOk();
-})->with(['dashboard', 'employees.index', 'training.index', 'epi.index', 'report.index']);
+})->with(['employees.index', 'training.index', 'epi.index', 'position.index']);
 
 test('the sidebar links the compliance report only to roles that can create reports', function () {
     $withPermission = $this->actingAs(userWithPermissions('ativo', 'epis.view', 'reports.create'))->get(route('epi.index'));

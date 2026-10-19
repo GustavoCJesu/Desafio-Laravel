@@ -1,6 +1,6 @@
 @php
-    $employees->loadMissing('user');
-    $activeCount = $employees->where('status', 'Ativo')->count();
+    $activeCount = $statusCounts['Ativo'] ?? 0;
+    $inactiveCount = $statusCounts['Inativo'] ?? 0;
 @endphp
 
 <x-layouts.app title="Funcionários" subtitle="Gerencie o quadro de colaboradores da empresa" icon="users">
@@ -12,6 +12,7 @@
 
     <x-slot:actions>
         @can('employees.create')
+        
             <button type="button" onclick="toggleModal('modal')" class="btn btn-primary">
                 <i data-lucide="user-plus"></i><span class="hidden sm:inline">Adicionar funcionário</span>
             </button>
@@ -20,9 +21,9 @@
 
     <div class="flex flex-col gap-6">
         <div class="grid gap-4 sm:grid-cols-3">
-            <x-ui.stat-card label="Total listado" :value="$employees->count()" icon="users" />
+            <x-ui.stat-card label="Total listado" :value="$employees->total()" icon="users" />
             <x-ui.stat-card label="Ativos" :value="$activeCount" icon="user-check" tone="success" />
-            <x-ui.stat-card label="Inativos" :value="$employees->count() - $activeCount" icon="user-x" tone="danger" />
+            <x-ui.stat-card label="Inativos" :value="$inactiveCount" icon="user-x" tone="danger" />
         </div>
 
         <div class="card overflow-hidden">
@@ -58,15 +59,10 @@
             </form>
 
             {{-- Tabela --}}
-            <form id="employee-form" method="POST" action="{{ route('employees.change') }}">
-                @csrf
-            </form>
-
             <div class="max-h-[60vh] overflow-y-auto">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="w-10"></th>
                             <th>Funcionário</th>
                             <th class="hidden md:table-cell">Cargo / Setor</th>
                             <th class="hidden xl:table-cell">Admissão</th>
@@ -76,11 +72,7 @@
                     </thead>
                     <tbody>
                         @forelse ($employees as $employee)
-                            <tr class="cursor-pointer has-checked:bg-brand-50" onclick="selectEmployee(this)">
-                                <td>
-                                    <input type="radio" form="employee-form" name="selected_employees"
-                                        value="{{ $employee->id }}" class="size-4 accent-brand-700">
-                                </td>
+                            <tr>
                                 <td class="whitespace-normal">
                                     <div class="flex items-center gap-3">
                                         <x-ui.avatar :name="$employee->name" class="size-9 text-xs" />
@@ -132,13 +124,26 @@
                                             <a href="{{ route('employees.viewUpdate', ['id' => $employee->id]) }}" class="icon-btn" title="Editar">
                                                 <i data-lucide="pencil"></i>
                                             </a>
+                                            <form action="{{ route('employees.change') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="selected_employees" value="{{ $employee->id }}">
+                                                @if ($employee->status === 'Ativo')
+                                                    <button type="submit" class="btn btn-warning-soft btn-sm" title="Desativar">
+                                                        <i data-lucide="power-off"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="submit" class="btn btn-success-soft btn-sm" title="Ativar">
+                                                        <i data-lucide="power"></i>
+                                                    </button>
+                                                @endif
+                                            </form>
                                         @endcan
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-16 text-center">
+                                <td colspan="5" class="py-16 text-center">
                                     <i data-lucide="search-x" class="mx-auto size-10 text-slate-300"></i>
                                     <p class="mt-3 font-medium text-slate-700">Nenhum funcionário encontrado</p>
                                     <p class="text-sm text-slate-500">Ajuste os filtros ou cadastre um novo funcionário.</p>
@@ -148,17 +153,18 @@
                     </tbody>
                 </table>
             </div>
-
-            @can('employees.update')
-                <div class="flex flex-col gap-3 border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            @if ($employees->total() > 0)
+                <div class="flex flex-col items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:flex-row" id="employee-pagination">
                     <p class="text-sm text-slate-500">
-                        Selecione um funcionário na lista para alterar o status.
+                        Página <span class="font-semibold text-slate-700">{{ $employees->currentPage() }}</span>
+                        de <span class="font-semibold text-slate-700">{{ $employees->lastPage() }}</span>
+                        · {{ $employees->total() }} {{ $employees->total() === 1 ? 'funcionário' : 'funcionários' }}
                     </p>
-                    <button type="submit" form="employee-form" class="btn btn-danger-soft">
-                        <i data-lucide="power"></i>Ativar / Desativar selecionado
-                    </button>
+                    @if ($employees->hasPages())
+                        {{ $employees->onEachSide(1)->links() }}
+                    @endif
                 </div>
-            @endcan
+            @endif
         </div>
     </div>
 </x-layouts.app>

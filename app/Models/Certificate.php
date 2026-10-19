@@ -2,12 +2,21 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Certificate extends Model
 {
+    public const STATUS_VALID = 'Válido';
+
+    public const STATUS_EXPIRING = 'A vencer';
+
+    public const STATUS_EXPIRED = 'Vencido';
+
+    public const EXPIRING_DAYS = 60;
+
     protected $fillable = [
         'instructor_id',
         'employee_id',
@@ -43,14 +52,20 @@ class Certificate extends Model
     }
 
     /**
-     * Situação pela data de validade: Vencido, A vencer (até 60 dias) ou Válido.
+     * Situação pela data de validade. O certificado vale até o fim do dia de vencimento:
+     * Vencido (data anterior a hoje), A vencer (hoje até EXPIRING_DAYS dias) ou Válido.
      */
-    public function currentStatus(): string
+    public static function statusForDate(CarbonInterface $expiresAt): string
     {
-        if ($this->expires_at->isPast()) {
-            return 'Vencido';
+        if ($expiresAt->lt(today())) {
+            return self::STATUS_EXPIRED;
         }
 
-        return now()->diffInDays($this->expires_at) <= 60 ? 'A vencer' : 'Válido';
+        return today()->diffInDays($expiresAt) <= self::EXPIRING_DAYS ? self::STATUS_EXPIRING : self::STATUS_VALID;
+    }
+
+    public function currentStatus(): string
+    {
+        return self::statusForDate($this->expires_at);
     }
 }

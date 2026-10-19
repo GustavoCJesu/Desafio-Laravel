@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
         User::create([
             'email' => 'camila@gmail.com',
             'employee_id' => 4,
-            'user_role_id' => 3,
+            'user_role_id' => 6,
             'password' => '123456',
         ]);
 
@@ -47,7 +47,7 @@ class UserSeeder extends Seeder
         User::create([
             'email' => 'fernanda@gmail.com',
             'employee_id' => 6,
-            'user_role_id' => 3,
+            'user_role_id' => 6,
             'password' => '123456',
         ]);
 

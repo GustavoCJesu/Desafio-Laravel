@@ -17,7 +17,7 @@ class PositionsController extends Controller
         $grouped = Permission::all()->groupBy(function ($permissions) {
             return explode(' ', $permissions->name, 2)[0];
         });
-        $positions = UserRole::with('rolePermissions')->get();
+        $positions = UserRole::with('rolePermissions')->withCount('user')->get();
 
         return view('pages.positions.index', compact('positions', 'grouped'));
     }

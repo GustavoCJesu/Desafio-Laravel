@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Certificate;
 use App\Models\SessionTraining;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class CertificateSeeder extends Seeder
 {
@@ -28,20 +27,11 @@ class CertificateSeeder extends Seeder
                     'session_training_id' => $training->id,
                     'confirmed_at' => $confirmedAt,
                     'expires_at' => $expiresAt,
-                    'status' => $this->statusFor($expiresAt),
+                    'status' => Certificate::statusForDate($expiresAt),
                 ]);
 
                 $certificate->epis()->attach($training->epis->pluck('id'));
             }
         }
-    }
-
-    private function statusFor(Carbon $expiresAt): string
-    {
-        if ($expiresAt->isPast()) {
-            return 'Vencido';
-        }
-
-        return now()->diffInDays($expiresAt) <= 60 ? 'A vencer' : 'Válido';
     }
 }

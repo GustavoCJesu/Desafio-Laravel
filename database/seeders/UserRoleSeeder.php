@@ -37,6 +37,11 @@ class UserRoleSeeder extends Seeder
             'status' => 'ativo',
         ]);
 
+        UserRole::create([
+            'title' => 'professor',
+            'status' => 'ativo',
+        ]);
+
         // Schema::create('user_roles', function (Blueprint $table) {
         //     $table->id();
         //     $table->string('title');

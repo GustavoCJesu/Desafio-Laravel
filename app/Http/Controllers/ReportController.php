@@ -6,6 +6,7 @@ use App\Http\Requests\ComplianceReportRequest;
 use App\Models\Employee;
 use App\Models\Sector;
 use App\Models\SessionTraining;
+use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -29,9 +30,9 @@ class ReportController extends Controller
 
     private const COMPLIANT_STATUSES = ['Válido', 'A vencer'];
 
-    public function index(): View
+    public function index()
     {
-        return view('pages.reports.index');
+        return redirect()->to(url()->previous());
     }
 
     /**
@@ -45,7 +46,7 @@ class ReportController extends Controller
         return view('pages.reports.compliance', [
             'filters' => $filters,
             'sectors' => Sector::orderBy('name')->get(),
-            'norms' => SessionTraining::distinct()->orderBy('norm')->pluck('norm'),
+            'norms' => SessionTraining::whereNotNull('norm')->distinct()->orderBy('norm')->pluck('norm'),
             'sectorName' => isset($filters['sector_id']) ? Sector::find($filters['sector_id'])?->name : null,
             'issuedAt' => now(),
             'issuedBy' => auth()->user()->employee->name ?? auth()->user()->email,
@@ -115,7 +116,7 @@ class ReportController extends Controller
             ->flatMap(fn (SessionTraining $training) => $training->employees->map(
                 fn (Employee $employee) => $this->complianceEntry($training, $employee)
             ))
-            ->groupBy(fn (array $entry) => $entry['employee_id'].'|'.$entry['norm'])
+            ->groupBy(fn (array $entry) => $entry['employee_id'].'|'.($entry['norm'] === 'Sem norma' ? $entry['title'] : $entry['norm']))
             ->map(fn (Collection $entries) => $entries
                 ->sort(fn (array $a, array $b) => [$a['rank'], -$a['expires_ts']] <=> [$b['rank'], -$b['expires_ts']])
                 ->first())
@@ -132,7 +133,8 @@ class ReportController extends Controller
             'visibleRows' => $visibleRows,
             'summary' => $this->summarize($rows),
             'byNorm' => $this->summarizeBy($rows, 'norm'),
-            'bySector' => $this->summarizeBy($rows, 'sector'),
+            'coverage' => $this->coverage($sectorId, $norm),
+            'coverageBySector' => $this->coverageBySector($sectorId, $norm),
         ];
     }
 
@@ -157,7 +159,7 @@ class ReportController extends Controller
             'registration' => $employee->registration,
             'sector' => $employee->sector->name ?? 'Sem setor',
             'role' => $employee->companyRole->title ?? 'Sem cargo',
-            'norm' => $training->norm,
+            'norm' => $training->norm ?? 'Sem norma',
             'title' => $training->title,
             'status' => $status,
             'rank' => self::STATUS_RANK[$status],
@@ -186,6 +188,69 @@ class ReportController extends Controller
                 ->where('employee_attendance', 'Compareceu')
                 ->isNotEmpty())
             ->sum('duration_hours');
+    }
+
+    /**
+     * Cobertura da força de trabalho: parte dos funcionários ativos com certificado válido,
+     * mesmo os que nunca foram convocados. Usa só consultas agregadas.
+     *
+     * @return array{employees: int, covered: int, convoked_without_certificate: int, untrained: int, rate: int}
+     */
+    private function coverage(?int $sectorId, ?string $norm): array
+    {
+        $active = Employee::query()
+            ->where('status', 'Ativo')
+            ->when($sectorId, fn ($query) => $query->where('sector_id', $sectorId));
+
+        $total = (clone $active)->count();
+        $covered = (clone $active)->whereHas('certificate', $this->validCertificate($norm))->count();
+        $convokedWithoutCertificate = (clone $active)
+            ->whereHas('trainings', fn ($query) => $query
+                ->where('session_trainings.status', '!=', 'Cancelado')
+                ->when($norm, fn ($query) => $query->where('session_trainings.norm', $norm)))
+            ->whereDoesntHave('certificate', $this->validCertificate($norm))
+            ->count();
+
+        return [
+            'employees' => $total,
+            'covered' => $covered,
+            'convoked_without_certificate' => $convokedWithoutCertificate,
+            'untrained' => $total - $covered - $convokedWithoutCertificate,
+            'rate' => $this->percentage($covered, $total),
+        ];
+    }
+
+    /**
+     * @return Collection<int, array{name: string, employees: int, covered: int, rate: int}>
+     */
+    private function coverageBySector(?int $sectorId, ?string $norm): Collection
+    {
+        return Sector::query()
+            ->when($sectorId, fn ($query) => $query->whereKey($sectorId))
+            ->withCount([
+                'employee as active_employees' => fn ($query) => $query->where('status', 'Ativo'),
+                'employee as covered_employees' => fn ($query) => $query
+                    ->where('status', 'Ativo')
+                    ->whereHas('certificate', $this->validCertificate($norm)),
+            ])
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Sector $sector) => [
+                'name' => $sector->name,
+                'employees' => $sector->active_employees,
+                'covered' => $sector->covered_employees,
+                'rate' => $this->percentage($sector->covered_employees, $sector->active_employees),
+            ]);
+    }
+
+    /**
+     * Restrição de certificados que ainda valem (até o fim do dia de vencimento), opcionalmente de uma norma.
+     */
+    private function validCertificate(?string $norm): Closure
+    {
+        return fn ($query) => $query
+            ->where('expires_at', '>=', today()->toDateString())
+            ->when($norm, fn ($query) => $query->whereHas('sessionTraining', fn ($training) => $training->where('norm', $norm)));
     }
 
     /**

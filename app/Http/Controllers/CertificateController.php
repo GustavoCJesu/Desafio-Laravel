@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificate;
+use App\Models\Employee;
 use App\Models\SessionTraining;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -21,20 +22,11 @@ class CertificateController extends Controller
         $certificates = Certificate::with(['employee', 'sessionTraining', 'instructor', 'epis'])
             ->latest('confirmed_at')
             ->get()
-            ->map(fn (Certificate $certificate) => ['code' => sprintf('CERT-%s-%04d', $certificate->confirmed_at->format('Y'), $certificate->id), 'employee' => $certificate->employee->name, 'registration' => $certificate->employee->registration, 'course' => $certificate->sessionTraining->norm.' '.$certificate->sessionTraining->title, 'hours' => $certificate->sessionTraining->class_min, 'epis' => $certificate->epis->pluck('name')->all(), 'instructor' => $certificate->instructor->name, 'confirmed_at' => $certificate->confirmed_at->format('d/m/Y'), 'expires_at' => $certificate->expires_at->format('d/m/Y'), 'status' => $this->statusFor($certificate->expires_at)]);
+            ->map(fn (Certificate $certificate) => ['code' => sprintf('CERT-%s-%04d', $certificate->confirmed_at->format('Y'), $certificate->id), 'employee' => $certificate->employee->name, 'registration' => $certificate->employee->registration, 'course' => trim($certificate->sessionTraining->norm.' '.$certificate->sessionTraining->title), 'hours' => $certificate->sessionTraining->class_min, 'epis' => $certificate->epis->pluck('name')->all(), 'instructor' => $certificate->instructor->name, 'confirmed_at' => $certificate->confirmed_at->format('d/m/Y'), 'expires_at' => $certificate->expires_at->format('d/m/Y'), 'status' => $certificate->currentStatus()]);
 
         $counts = $certificates->countBy('status');
 
         return view('pages.certificates.index', compact('certificates', 'counts'));
-    }
-
-    private function statusFor(Carbon $expiresAt): string
-    {
-        if ($expiresAt->isPast()) {
-            return 'Vencido';
-        }
-
-        return now()->diffInDays($expiresAt) <= 60 ? 'A vencer' : 'Válido';
     }
 
     /**
@@ -46,66 +38,47 @@ class CertificateController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Emite certificados apenas para os funcionários da seção que atingiram a carga horária mínima
+     * e ainda não possuem certificado dela.
      */
-    public function store(Request $request, int $id)
+    public function store(Request $request, SessionTraining $sessionTraining): RedirectResponse
     {
-
         try {
-            $session = SessionTraining::findOrFail($id);
+            $sessionTraining->load(['employees', 'epis', 'certificate']);
 
-            $instructor = $session->instructor;
-            $employees = $session->employees;
-            $id = $session->id;
-            $confirmed_at = now();
-            $status = 'Válido';
-            $epis = $session->epis->pluck('id')->toArray();
-            $expires_at = now()->addMonths($session->validity_months);
+            $alreadyCertified = $sessionTraining->certificate->pluck('employee_id');
+            $eligibleEmployees = $sessionTraining->employees
+                ->reject(fn (Employee $employee) => $alreadyCertified->contains($employee->id))
+                ->filter(fn (Employee $employee) => $sessionTraining->attendedHoursFor($employee) >= $sessionTraining->min_hours);
 
-            $certificateData = $employees->map(function ($employee) use ($instructor, $status, $expires_at, $confirmed_at) {
-                return [
-                    'employee_id' => $employee->id,
-                    'instructor_id' => $instructor->id,
-                    'status' => $status,
-                    'confirmed_at' => $confirmed_at,
-                    'expires_at' => $expires_at,
-                ];
-            })->toArray();
-
-            $createCertificate = $session->certificate()->createMany($certificateData);
-
-            $certificateEpi = [];
-            foreach ($createCertificate as $certificate) {
-                foreach ($epis as $epi) {
-                    $certificateEpi[] = [
-                        'certificate_id' => $certificate->id,
-                        'epi_id' => $epi,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
-                }
+            if ($eligibleEmployees->isEmpty()) {
+                return redirect()->back()->with('Error', 'Nenhum funcionário atingiu a carga horária mínima para receber o certificado.');
             }
 
-            dump($certificateEpi);
+            $confirmedAt = now();
+            $expiresAt = $confirmedAt->copy()->addMonths($sessionTraining->validity_months);
+            $epiIds = $sessionTraining->epis->pluck('id');
 
-            $teste = DB::table('certificate_epis')->insert($certificateEpi);
+            DB::transaction(function () use ($sessionTraining, $eligibleEmployees, $confirmedAt, $expiresAt, $epiIds) {
+                foreach ($eligibleEmployees as $employee) {
+                    $certificate = $sessionTraining->certificate()->create([
+                        'employee_id' => $employee->id,
+                        'instructor_id' => $sessionTraining->instructor_id,
+                        'status' => Certificate::STATUS_VALID,
+                        'confirmed_at' => $confirmedAt,
+                        'expires_at' => $expiresAt,
+                    ]);
 
-            dump($teste);
+                    $certificate->epis()->attach($epiIds);
+                }
+            });
 
-            return redirect()->back()->with('Success', 'Certificados emitidos com sucesso');
-
+            return redirect()->back()->with('Success', $eligibleEmployees->count().' certificado(s) emitido(s) com sucesso.');
         } catch (Exception $e) {
-            Log::error('Erro ao emitir o certificado, mais informações no arquivo de log.'.$e->getMessage());
+            Log::error('Erro ao emitir o certificado: '.$e->getMessage());
 
             return redirect()->back()->with('Error', 'Erro ao tentar emitir os certificados.');
         }
-        // dump($certificateData);
-        // dump($expires_at);
-        // dump($employees[0]->certificate);
-        // dump($session->employees);
-        // dump($session->epis);
-        // dump($session->instructor);
-        // dump($request->all(), $session);
     }
 
     /**

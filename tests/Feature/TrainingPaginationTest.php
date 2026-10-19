@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Classes;
+use App\Models\CompanyRole;
 use App\Models\Employee;
 use App\Models\SessionTraining;
 
@@ -8,7 +9,7 @@ function createTrainings(int $amount): void
 {
     foreach (range(1, $amount) as $number) {
         SessionTraining::forceCreate([
-            'instructor_id' => Employee::factory()->create()->id,
+            'instructor_id' => createEmployee()->id,
             'norm' => 'NR-35',
             'title' => "Aula {$number}",
             'description' => 'Descrição',
@@ -65,7 +66,7 @@ test('completing every planned class concludes the training', function () {
 });
 
 test('creating a training rejects a minimum workload above the total workload', function () {
-    $employee = Employee::factory()->create();
+    $employee = createEmployee();
 
     $this->actingAs(userWithPermissions('ativo', 'trainings.create'))
         ->post(route('training.create'), [
@@ -99,4 +100,53 @@ test('scheduling classes cannot exceed nor fall short of the training workload',
     $schedule('2026-10-11 08:00:00', 4)->assertSessionHasNoErrors();
 
     expect($training->classes()->count())->toBe(2);
+});
+
+test('a training can be created without a norm', function () {
+    $payload = [
+        'norm' => '',
+        'title' => 'Integração de novos colaboradores',
+        'description' => 'Apresentação da empresa',
+        'instructor_id' => createEmployee()->id,
+        'status' => 'Agendado',
+        'validity_months' => 12,
+        'class_min' => 4,
+        'min_hours' => 4,
+        'class_amount' => 1,
+        'capacity' => 10,
+    ];
+
+    $this->actingAs(userWithPermissions('ativo', 'trainings.create', 'trainings.view'))
+        ->post(route('training.create'), $payload)
+        ->assertSessionHas('Success');
+
+    expect(SessionTraining::first()->norm)->toBeNull();
+
+    $this->get(route('training.index'))->assertOk()->assertSee('Integração de novos colaboradores');
+});
+
+test('only active professors are offered as instructors when scheduling a training', function () {
+    $professorRole = CompanyRole::factory()->create(['title' => Employee::INSTRUCTOR_ROLE_TITLE]);
+    $professor = createEmployee(['name' => 'Ana Professora', 'company_role_id' => $professorRole->id]);
+    createEmployee(['name' => 'Beto Professor Inativo', 'company_role_id' => $professorRole->id, 'status' => 'Inativo']);
+    createEmployee(['name' => 'Carlos Operador']);
+
+    $this->actingAs(userWithPermissions('ativo', 'trainings.view'))
+        ->get(route('training.index'))
+        ->assertOk()
+        ->assertViewHas('instructors', fn ($instructors) => $instructors->pluck('id')->all() === [$professor->id]);
+});
+
+test('editing a training keeps its current instructor even when they are not a professor', function () {
+    $professorRole = CompanyRole::factory()->create(['title' => Employee::INSTRUCTOR_ROLE_TITLE]);
+    $professor = createEmployee(['company_role_id' => $professorRole->id]);
+    $formerInstructor = createEmployee();
+    createTrainings(1);
+    $training = SessionTraining::first();
+    $training->update(['instructor_id' => $formerInstructor->id]);
+
+    $this->actingAs(userWithPermissions('ativo', 'trainings.update'))
+        ->get(route('training.edit', $training))
+        ->assertOk()
+        ->assertViewHas('instructors', fn ($instructors) => $instructors->pluck('id')->sort()->values()->all() === collect([$professor->id, $formerInstructor->id])->sort()->values()->all());
 });

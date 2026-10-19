@@ -11,11 +11,18 @@
         <div class="border-b border-slate-100 px-6 py-4">
             <label for="attendanceClass{{ $id }}" class="form-label">Aula</label>
             @if (count($classes) === 0)
-                <p class="text-blue-700 hover:scale-102 transition"><a href="{{ route('training.edit', $id) }}">Nenhuma aula cadastrada, crie uma agora.</a></p>
+                <p class="text-blue-700 hover:scale-102 transition"><a href="{{ route('training.edit', $id) }}">Nenhuma
+                        aula cadastrada, crie uma agora.</a></p>
             @else
                 <select name="class_id" id="attendanceClass{{ $id }}" class="form-input">
                     @foreach ($classes as $class)
-                        <option  value="{{ $class->id }}">{{ $class->class_dt->format('d/m/Y H:i') }}</option>
+                        @if ($class->status == 'Concluído')
+                            <option value="{{ $class->id }}">
+                                <p class="">{{ $class->class_dt->format('d/m/Y H:i') }} - Concluído</p>
+                            </option>
+                        @else
+                            <option value="{{ $class->id }}">{{ $class->class_dt->format('d/m/Y H:i') }}</option>
+                        @endif
                     @endforeach
                 </select>
             @endif
@@ -29,7 +36,8 @@
                             <p class="text-sm font-medium text-slate-900">{{ $attendee['name'] }}</p>
                             <p class="font-mono text-xs text-slate-500">{{ $attendee['registration'] }}</p>
                         </div>
-                        <input value="{{ $attendee->id }}" name="employees[]" type="checkbox" class="form-checkbox size-5" @checked($attendee['present'])>
+                        <input value="{{ $attendee->id }}" name="employees[]" type="checkbox"
+                            class="form-checkbox size-5" @checked($attendee['present'])>
                     </label>
                 </li>
             @endforeach
@@ -39,7 +47,8 @@
             <div class="flex gap-2">
                 <button type="button" class="btn btn-secondary"
                     onclick="toggleModal('attendanceModal{{ $id }}')">Fechar</button>
-                <button type="submit" class="btn btn-primary" onclick="toggleModal('attendanceModal{{ $id }}')">
+                <button type="submit" class="btn btn-primary"
+                    onclick="toggleModal('attendanceModal{{ $id }}')">
                     <i data-lucide="save"></i>Salvar presença
                 </button>
             </div>

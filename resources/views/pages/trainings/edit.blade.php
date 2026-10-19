@@ -14,7 +14,7 @@
     //     ['name' => 'Patrícia Lima', 'registration' => '0584-2', 'hours' => 0],
     // ]
 @endphp
-<x-layouts.app title="Editar aula" :subtitle="$training->norm . ' · ' . $training->title" icon="graduation-cap">
+<x-layouts.app title="Editar aula" :subtitle="($training->norm ? $training->norm . ' · ' : '') . $training->title" icon="graduation-cap">
     <x-slot:modals>
         <x-ui.modal id="issueCertificatesModal" title="Emitir certificados"
             subtitle="Esta ação gera os certificados dos funcionários elegíveis." icon="award">
@@ -23,7 +23,7 @@
                     Serão emitidos <b class="text-slate-900">{{ count($certificateCandidates) - count(array_filter($certificateCandidates, function ($candidate) use($training) {
                                     return $candidate['hours'] < $training->min_hours;
                                 })) }}</b> certificados para
-                    <b class="text-slate-900">{{ $training->norm }} · {{ $training->title }}</b>.
+                    <b class="text-slate-900">{{ $training->norm ? $training->norm.' · ' : '' }}{{ $training->title }}</b>.
                 </p>
                 <p class="mt-2">
                     {{count(array_filter($certificateCandidates, function ($candidate) use($training) {
@@ -62,8 +62,12 @@
                     <div class="flex items-center gap-3">
                         <div
                             class="bg-gradient-primary flex size-10 shrink-0 flex-col items-center justify-center rounded-xl text-white">
-                            <span class="text-[9px] leading-none opacity-80">NR</span>
-                            <span class="text-sm leading-tight font-bold">{{ substr($training->norm, 3) }}</span>
+                            @if ($training->norm)
+                                <span class="text-[9px] leading-none opacity-80">NR</span>
+                                <span class="text-sm leading-tight font-bold">{{ substr($training->norm, 3) }}</span>
+                            @else
+                                <i data-lucide="graduation-cap" class="size-4"></i>
+                            @endif
                         </div>
                         <div>
                             <h2 class="card-title">Dados da aula</h2>
@@ -76,7 +80,7 @@
 
                 <div class="card-body grid gap-4 sm:grid-cols-2">
                     <div>
-                        <label class="form-label" for="norm">Norma</label>
+                        <label class="form-label" for="norm">Norma <span class="font-normal text-slate-400">(opcional)</span></label>
                         <input id="norm" name="norm" maxlength="10" class="form-input" type="text"
                             value="{{ $training->norm }}" />
                     </div>
@@ -92,9 +96,9 @@
                     <div>
                         <label class="form-label" for="instructor_id">Instrutor</label>
                         <select id="instructor_id" name="instructor_id" class="form-input">
-                            @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}" @selected($training->instructor_id === $employee->id)>
-                                    {{ $employee->name }}
+                            @foreach ($instructors as $instructor)
+                                <option value="{{ $instructor->id }}" @selected($training->instructor_id === $instructor->id)>
+                                    {{ $instructor->name }}
                                 </option>
                             @endforeach
                         </select>

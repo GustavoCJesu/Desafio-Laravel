@@ -9,51 +9,79 @@
     ];
     $documentCode = 'REL-'.$issuedAt->format('Ymd-His');
     $exportQuery = array_filter($filters, fn ($value) => $value !== null && $value !== '');
+    $backUrl = auth()->user()->can('employees.view') ? route('employees.index') : route('certificate.index');
 @endphp
 
 <x-layouts.base title="Relatório de conformidade">
-    {{-- Barra de comandos (não vai para a impressão) --}}
     <div class="no-print sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3 sm:px-8">
-            <a href="{{ route('report.index') }}" class="btn btn-secondary">
-                <i data-lucide="arrow-left"></i><span class="hidden sm:inline">Relatórios</span>
+        <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-8">
+            <a id="report-back" href="{{ $backUrl }}" class="icon-btn" title="Voltar" aria-label="Voltar">
+                <i data-lucide="arrow-left"></i>
             </a>
 
-            <form method="GET" action="{{ route('report.compliance') }}" class="flex flex-1 flex-wrap items-center gap-2">
-                <select name="sector_id" class="form-input w-auto" aria-label="Setor">
-                    <option value="">Todos os setores</option>
-                    @foreach ($sectors as $sector)
-                        <option value="{{ $sector->id }}" @selected((int) ($filters['sector_id'] ?? 0) === $sector->id)>{{ $sector->name }}</option>
-                    @endforeach
-                </select>
-                <select name="norm" class="form-input w-auto" aria-label="Norma">
-                    <option value="">Todas as normas</option>
-                    @foreach ($norms as $norm)
-                        <option value="{{ $norm }}" @selected(($filters['norm'] ?? null) === $norm)>{{ $norm }}</option>
-                    @endforeach
-                </select>
-                <label class="flex items-center gap-2 text-sm text-slate-600">
+            <div class="flex min-w-0 flex-1 items-center gap-3">
+                <div class="hidden size-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700 sm:flex">
+                    <i data-lucide="file-check-2" class="size-5"></i>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="truncate text-base font-bold text-slate-900 sm:text-lg">Relatório de conformidade</h1>
+                    <p class="truncate text-xs text-slate-500 sm:text-sm">Escolha os filtros e imprima ou exporte o documento</p>
+                </div>
+            </div>
+
+            <div class="flex shrink-0 items-center gap-2">
+                @can('reports.export')
+                    <a href="{{ route('report.compliance.export', $exportQuery) }}" class="btn btn-secondary">
+                        <i data-lucide="download"></i><span class="hidden sm:inline">Exportar CSV</span>
+                    </a>
+                @endcan
+                <button type="button" onclick="window.print()" class="btn btn-primary">
+                    <i data-lucide="printer"></i><span class="hidden sm:inline">Imprimir</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <form method="GET" action="{{ route('report.compliance') }}" class="no-print mx-auto mt-6 w-full max-w-6xl px-4 sm:px-8">
+        <div class="card">
+            <div class="grid items-end gap-4 p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto_auto]">
+                <div>
+                    <label class="form-label" for="filter_sector">Setor</label>
+                    <select id="filter_sector" name="sector_id" class="form-input">
+                        <option value="">Todos os setores</option>
+                        @foreach ($sectors as $sector)
+                            <option value="{{ $sector->id }}" @selected((int) ($filters['sector_id'] ?? 0) === $sector->id)>{{ $sector->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label" for="filter_norm">Norma</label>
+                    <select id="filter_norm" name="norm" class="form-input">
+                        <option value="">Todas as normas</option>
+                        @foreach ($norms as $norm)
+                            <option value="{{ $norm }}" @selected(($filters['norm'] ?? null) === $norm)>{{ $norm }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <label class="flex h-10 items-center gap-2 text-sm text-slate-700">
                     <input type="checkbox" name="only_pending" value="1" class="size-4 accent-brand-700"
                         @checked($filters['only_pending'] ?? false)>
                     Somente pendências
                 </label>
-                <button type="submit" class="btn btn-secondary"><i data-lucide="filter"></i>Aplicar</button>
-            </form>
-
-            @can('reports.export')
-                <a href="{{ route('report.compliance.export', $exportQuery) }}" class="btn btn-secondary">
-                    <i data-lucide="download"></i><span class="hidden sm:inline">Exportar CSV</span>
-                </a>
-            @endcan
-            <button type="button" onclick="window.print()" class="btn btn-primary">
-                <i data-lucide="printer"></i><span class="hidden sm:inline">Imprimir / salvar PDF</span>
-            </button>
+                <div class="flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i data-lucide="filter"></i>Aplicar
+                    </button>
+                    <a href="{{ route('report.compliance') }}" class="btn btn-secondary" title="Limpar filtros">
+                        <i data-lucide="rotate-ccw"></i><span class="sr-only">Limpar filtros</span>
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
+    </form>
 
     <main class="mx-auto my-6 w-full max-w-6xl px-4 sm:px-8 print:my-0 print:max-w-none print:px-0">
         <article class="flex flex-col gap-8 rounded-xl bg-white p-6 shadow-card ring-1 ring-slate-200 sm:p-10 print:rounded-none print:p-0 print:shadow-none print:ring-0">
-            {{-- Identificação do documento --}}
             <header class="flex flex-col gap-4 border-b-2 border-brand-700 pb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div class="flex items-start gap-3">
                     <div class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-brand-700 text-white">
@@ -75,7 +103,6 @@
                 </dl>
             </header>
 
-            {{-- Escopo --}}
             <section class="print-avoid-break">
                 <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">1. Escopo</h2>
                 <dl class="mt-3 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
@@ -85,19 +112,35 @@
                     <div class="flex gap-2"><dt class="text-slate-500">Listagem:</dt><dd class="font-medium">{{ ($filters['only_pending'] ?? false) ? 'Somente pendências' : 'Todos os registros' }}</dd></div>
                 </dl>
                 <p class="mt-3 text-xs leading-relaxed text-slate-500">
-                    Consideram-se os funcionários <b>ativos</b> convocados para treinamentos não cancelados. Cada funcionário é avaliado uma vez por norma,
-                    pelo certificado mais favorável. São considerados <b>em conformidade</b> os certificados <b>Válidos</b> e <b>A vencer</b>
-                    (vencimento em até 60 dias). Os indicadores abaixo valem para todo o escopo, mesmo quando a listagem mostra só as pendências.
+                    A <b>cobertura</b> considera todos os funcionários <b>ativos</b> do escopo e informa quantos têm certificado ainda válido,
+                    inclusive os que nunca foram convocados. A <b>conformidade das convocações</b> avalia os funcionários ativos convocados
+                    para treinamentos não cancelados, uma vez por norma, pelo certificado mais favorável. Contam como conformes os certificados
+                    <b>Válidos</b> e <b>A vencer</b> (vencimento em até 60 dias). O sistema ainda não registra quais normas cada cargo exige,
+                    por isso quem nunca foi convocado aparece na cobertura, mas não como pendência individual. Os indicadores valem para todo
+                    o escopo, mesmo quando a listagem mostra só as pendências.
                 </p>
             </section>
 
-            {{-- Indicadores --}}
             <section class="print-avoid-break">
-                <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">2. Indicadores gerais</h2>
+                <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">2. Cobertura da força de trabalho</h2>
+                <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <x-ui.stat-card label="Funcionários ativos" value="{{ number_format($coverage['employees'], 0, ',', '.') }}" icon="users"
+                        hint="{{ $sectorName ?? 'Todos os setores' }}" />
+                    <x-ui.stat-card label="Com certificado válido" value="{{ number_format($coverage['covered'], 0, ',', '.') }}" icon="shield-check"
+                        :tone="$coverage['rate'] >= 90 ? 'success' : 'warning'" hint="{{ $coverage['rate'] }}% dos ativos" />
+                    <x-ui.stat-card label="Convocados sem certificado válido" value="{{ number_format($coverage['convoked_without_certificate'], 0, ',', '.') }}" icon="clock"
+                        tone="warning" hint="Treinamento pendente ou vencido" />
+                    <x-ui.stat-card label="Sem treinamento registrado" value="{{ number_format($coverage['untrained'], 0, ',', '.') }}" icon="triangle-alert"
+                        tone="danger" hint="Nunca convocados" />
+                </div>
+            </section>
+
+            <section class="print-avoid-break">
+                <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">3. Conformidade das convocações</h2>
                 <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <x-ui.stat-card label="Índice de conformidade" value="{{ $summary['rate'] }}%" icon="shield-check"
-                        :tone="$summary['rate'] >= 90 ? 'success' : 'warning'" hint="{{ $summary['compliant'] }} de {{ $summary['requirements'] }} exigências" />
-                    <x-ui.stat-card label="Funcionários avaliados" value="{{ $summary['employees'] }}" icon="users"
+                        :tone="$summary['rate'] >= 90 ? 'success' : 'warning'" hint="{{ $summary['compliant'] }} de {{ $summary['requirements'] }} convocações" />
+                    <x-ui.stat-card label="Funcionários convocados" value="{{ $summary['employees'] }}" icon="users"
                         hint="{{ $summary['employees_compliant'] }} totalmente conformes" />
                     <x-ui.stat-card label="Certificados a vencer" value="{{ $summary['by_status']['A vencer'] }}" icon="alarm-clock" tone="warning" hint="Até 60 dias" />
                     <x-ui.stat-card label="Irregularidades" value="{{ $summary['requirements'] - $summary['compliant'] }}" icon="triangle-alert" tone="danger"
@@ -114,22 +157,21 @@
                 </ul>
             </section>
 
-            {{-- Conformidade por norma e por setor --}}
-            <section class="grid gap-6 lg:grid-cols-2">
-                @foreach ([['3. Conformidade por norma', 'Norma', $byNorm], ['4. Conformidade por setor', 'Setor', $bySector]] as [$heading, $label, $groups])
-                    <div class="print-avoid-break">
-                        <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">{{ $heading }}</h2>
-                        <table class="data-table mt-3">
+            <section class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                <div class="print-avoid-break min-w-0">
+                    <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">4. Convocações por norma</h2>
+                    <div class="mt-3 overflow-x-auto print:overflow-visible">
+                        <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>{{ $label }}</th>
-                                    <th class="text-right">Exigências</th>
+                                    <th>Norma</th>
+                                    <th class="text-right">Convocações</th>
                                     <th class="text-right">Conformes</th>
                                     <th class="text-right">Índice</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($groups as $name => $group)
+                                @forelse ($byNorm as $name => $group)
                                     <tr>
                                         <td class="font-medium text-slate-900">{{ $name }}</td>
                                         <td class="text-right">{{ $group['total'] }}</td>
@@ -142,12 +184,39 @@
                             </tbody>
                         </table>
                     </div>
-                @endforeach
+                </div>
+
+                <div class="print-avoid-break min-w-0">
+                    <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">5. Cobertura por setor</h2>
+                    <div class="mt-3 overflow-x-auto print:overflow-visible">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Setor</th>
+                                    <th class="text-right">Ativos</th>
+                                    <th class="text-right whitespace-normal">Com certificado</th>
+                                    <th class="text-right">Cobertura</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($coverageBySector as $sector)
+                                    <tr>
+                                        <td class="font-medium whitespace-normal text-slate-900">{{ $sector['name'] }}</td>
+                                        <td class="text-right">{{ number_format($sector['employees'], 0, ',', '.') }}</td>
+                                        <td class="text-right">{{ number_format($sector['covered'], 0, ',', '.') }}</td>
+                                        <td class="text-right font-semibold {{ $sector['rate'] >= 90 ? 'text-emerald-700' : 'text-amber-700' }}">{{ $sector['rate'] }}%</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="4" class="py-6 text-center text-slate-400">Sem setores no escopo.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
-            {{-- Evidências: registro por funcionário --}}
             <section>
-                <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">5. Registro de evidências por funcionário</h2>
+                <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">6. Registro de evidências por funcionário</h2>
                 <p class="mt-1 text-xs text-slate-500">{{ $visibleRows->count() }} {{ $visibleRows->count() === 1 ? 'registro' : 'registros' }} listados.</p>
                 <div class="mt-3 overflow-x-auto print:overflow-visible">
                     <table class="data-table text-xs">
@@ -196,9 +265,8 @@
                 <p class="mt-2 text-[11px] text-slate-400">Carga: horas cumpridas pelo funcionário / carga horária do treinamento.</p>
             </section>
 
-            {{-- Treinamentos considerados --}}
             <section>
-                <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">6. Treinamentos considerados</h2>
+                <h2 class="text-sm font-semibold tracking-wide text-slate-900 uppercase">7. Treinamentos considerados</h2>
                 <div class="mt-3 overflow-x-auto print:overflow-visible">
                     <table class="data-table text-xs">
                         <thead>
@@ -217,7 +285,7 @@
                         <tbody>
                             @forelse ($trainings as $training)
                                 <tr>
-                                    <td class="font-medium text-slate-900">{{ $training->norm }}</td>
+                                    <td class="font-medium text-slate-900">{{ $training->norm ?? '—' }}</td>
                                     <td class="whitespace-normal">{{ $training->title }}</td>
                                     <td>{{ $training->status }}</td>
                                     <td class="whitespace-normal">{{ $training->instructor->name ?? '—' }}</td>
@@ -235,7 +303,6 @@
                 </div>
             </section>
 
-            {{-- Assinaturas --}}
             <footer class="print-avoid-break mt-4 border-t border-slate-200 pt-6">
                 <div class="grid gap-10 text-center text-xs text-slate-500 sm:grid-cols-2">
                     <div class="border-t border-slate-400 pt-2">
@@ -254,4 +321,23 @@
             </footer>
         </article>
     </main>
+
+    <script>
+        (function () {
+            const back = document.getElementById('report-back');
+            const key = 'complianceReportOrigin';
+
+            try {
+                const referrer = document.referrer;
+                const isOtherPage = referrer.startsWith(location.origin) && !referrer.startsWith(location.origin + location.pathname);
+
+                if (isOtherPage) {
+                    sessionStorage.setItem(key, referrer);
+                }
+
+                back.href = sessionStorage.getItem(key) || back.href;
+            } catch (error) {
+            }
+        })();
+    </script>
 </x-layouts.base>

@@ -10,7 +10,7 @@ use App\Models\SessionTraining;
 function complianceTraining(string $norm, string $status = 'Concluído', ?Employee $instructor = null): SessionTraining
 {
     return SessionTraining::forceCreate([
-        'instructor_id' => ($instructor ?? Employee::factory()->create())->id,
+        'instructor_id' => ($instructor ?? createEmployee())->id,
         'norm' => $norm,
         'title' => "Treinamento {$norm}",
         'description' => 'Descrição',
@@ -76,12 +76,12 @@ test('each employee is classified by the certificate situation for the norm', fu
     $training = complianceTraining('NR-35');
     $scheduled = complianceTraining('NR-10', 'Agendado');
 
-    $valid = Employee::factory()->create(['name' => 'Ana Valida']);
-    $expiring = Employee::factory()->create(['name' => 'Bruno Avencer']);
-    $expired = Employee::factory()->create(['name' => 'Carla Vencida']);
-    $failed = Employee::factory()->create(['name' => 'Diego Reprovado']);
-    $notIssued = Employee::factory()->create(['name' => 'Elisa Semcertificado']);
-    $pending = Employee::factory()->create(['name' => 'Fabio Pendente']);
+    $valid = createEmployee(['name' => 'Ana Valida']);
+    $expiring = createEmployee(['name' => 'Bruno Avencer']);
+    $expired = createEmployee(['name' => 'Carla Vencida']);
+    $failed = createEmployee(['name' => 'Diego Reprovado']);
+    $notIssued = createEmployee(['name' => 'Elisa Semcertificado']);
+    $pending = createEmployee(['name' => 'Fabio Pendente']);
 
     foreach ([$valid, $expiring, $expired, $failed, $notIssued] as $employee) {
         complianceEnroll($training, $employee, $employee->is($failed) ? 2 : 8);
@@ -106,7 +106,7 @@ test('each employee is classified by the certificate situation for the norm', fu
 });
 
 test('the most favourable certificate represents the employee in a norm', function () {
-    $employee = Employee::factory()->create(['name' => 'Gabriel Renovado']);
+    $employee = createEmployee(['name' => 'Gabriel Renovado']);
     $old = complianceTraining('NR-35');
     $recent = complianceTraining('NR-35');
 
@@ -123,8 +123,8 @@ test('the most favourable certificate represents the employee in a norm', functi
 test('inactive employees and cancelled trainings are left out of the report', function () {
     $training = complianceTraining('NR-35');
     $cancelled = complianceTraining('NR-10', 'Cancelado');
-    $inactive = Employee::factory()->create(['name' => 'Heitor Inativo', 'status' => 'Inativo']);
-    $active = Employee::factory()->create(['name' => 'Iris Ativa']);
+    $inactive = createEmployee(['name' => 'Heitor Inativo', 'status' => 'Inativo']);
+    $active = createEmployee(['name' => 'Iris Ativa']);
 
     complianceEnroll($training, $inactive, 8);
     complianceEnroll($cancelled, $active, 8);
@@ -138,9 +138,9 @@ test('the filters narrow the listing while the indicators keep the whole scope',
     $training = complianceTraining('NR-35');
     $production = Sector::factory()->create();
     $office = Sector::factory()->create();
-    $compliant = Employee::factory()->create(['name' => 'Joana Conforme', 'sector_id' => $production->id]);
-    $irregular = Employee::factory()->create(['name' => 'Kleber Irregular', 'sector_id' => $production->id]);
-    $other = Employee::factory()->create(['name' => 'Luiza Outrosetor', 'sector_id' => $office->id]);
+    $compliant = createEmployee(['name' => 'Joana Conforme', 'sector_id' => $production->id]);
+    $irregular = createEmployee(['name' => 'Kleber Irregular', 'sector_id' => $production->id]);
+    $other = createEmployee(['name' => 'Luiza Outrosetor', 'sector_id' => $office->id]);
 
     foreach ([$compliant, $irregular, $other] as $employee) {
         complianceEnroll($training, $employee, 8);
@@ -171,7 +171,7 @@ test('exporting the compliance report requires the export permission', function 
 
 test('the exported csv lists the rows and neutralizes spreadsheet formulas', function () {
     $training = complianceTraining('NR-35');
-    $employee = Employee::factory()->create(['name' => '=HYPERLINK("http://x")']);
+    $employee = createEmployee(['name' => '=HYPERLINK("http://x")']);
     complianceEnroll($training, $employee, 8);
     complianceCertificate($training, $employee, now()->addYear()->toDateString());
 
@@ -184,4 +184,98 @@ test('the exported csv lists the rows and neutralizes spreadsheet formulas', fun
     expect($csv)->toStartWith("\xEF\xBB\xBF".'Matrícula;Funcionário;Setor')
         ->and($csv)->toContain('"\'=HYPERLINK(""http://x"")";')
         ->and($csv)->toContain('NR-35;"Treinamento NR-35";Válido');
+});
+
+test('the filter form keeps the chosen options and offers a way to clear them', function () {
+    $sector = Sector::factory()->create();
+    complianceTraining('NR-35');
+
+    $this->actingAs(userWithPermissions('ativo', 'reports.create'))
+        ->get(route('report.compliance', ['sector_id' => $sector->id, 'norm' => 'NR-35', 'only_pending' => 1]))
+        ->assertOk()
+        ->assertSee('<option value="'.$sector->id.'" selected>', false)
+        ->assertSee('<option value="NR-35" selected>', false)
+        ->assertSee('title="Limpar filtros"', false);
+});
+
+test('the coverage counts every active employee, including those never convoked', function () {
+    $training = complianceTraining('NR-35');
+    $sector = Sector::factory()->create();
+
+    $covered = createEmployee(['sector_id' => $sector->id]);
+    $convoked = createEmployee(['sector_id' => $sector->id]);
+    createEmployee(['sector_id' => $sector->id]);
+    createEmployee(['sector_id' => $sector->id]);
+    createEmployee(['sector_id' => $sector->id, 'status' => 'Inativo']);
+    createEmployee();
+
+    complianceEnroll($training, $covered, 8);
+    complianceEnroll($training, $convoked, 8);
+    complianceCertificate($training, $covered, now()->addYear()->toDateString());
+
+    $response = $this->actingAs(userWithPermissions('ativo', 'reports.create'))
+        ->get(route('report.compliance', ['sector_id' => $sector->id]));
+
+    expect($response->viewData('coverage'))->toMatchArray([
+        'employees' => 4,
+        'covered' => 1,
+        'convoked_without_certificate' => 1,
+        'untrained' => 2,
+        'rate' => 25,
+    ]);
+    expect($response->viewData('coverageBySector')->all())->toBe([
+        ['name' => $sector->name, 'employees' => 4, 'covered' => 1, 'rate' => 25],
+    ]);
+});
+
+test('an expired certificate does not count as coverage and a certificate valid until today does', function () {
+    $training = complianceTraining('NR-35');
+    $expired = createEmployee();
+    $expiresToday = createEmployee();
+
+    complianceEnroll($training, $expired, 8);
+    complianceEnroll($training, $expiresToday, 8);
+    complianceCertificate($training, $expired, now()->subDay()->toDateString());
+    complianceCertificate($training, $expiresToday, today()->toDateString());
+
+    $response = $this->actingAs(userWithPermissions('ativo', 'reports.create'))->get(route('report.compliance'));
+
+    expect($response->viewData('coverage'))->toMatchArray(['employees' => 3, 'covered' => 1, 'convoked_without_certificate' => 1, 'untrained' => 1]);
+});
+
+test('the norm filter limits the coverage to certificates of that norm', function () {
+    $height = complianceTraining('NR-35');
+    $electricity = complianceTraining('NR-10');
+    $employee = createEmployee();
+
+    complianceEnroll($height, $employee, 8);
+    complianceCertificate($height, $employee, now()->addYear()->toDateString());
+
+    $user = userWithPermissions('ativo', 'reports.create');
+
+    expect($this->actingAs($user)->get(route('report.compliance', ['norm' => 'NR-35']))->viewData('coverage')['covered'])->toBe(1)
+        ->and($this->actingAs($user)->get(route('report.compliance', ['norm' => 'NR-10']))->viewData('coverage'))
+        ->toMatchArray(['employees' => 3, 'covered' => 0, 'untrained' => 3]);
+});
+
+test('the report page shows the workforce coverage', function () {
+    createEmployee();
+
+    $this->actingAs(userWithPermissions('ativo', 'reports.create'))
+        ->get(route('report.compliance'))
+        ->assertOk()
+        ->assertSee('Cobertura da força de trabalho')
+        ->assertSee('Sem treinamento registrado')
+        ->assertSee('Cobertura por setor')
+        ->assertSee('lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]', false);
+});
+
+test('the back button falls back to a page the role can open', function () {
+    $this->actingAs(userWithPermissions('ativo', 'reports.create', 'employees.view'))
+        ->get(route('report.compliance'))
+        ->assertSee('id="report-back" href="'.route('employees.index').'"', false);
+
+    $this->actingAs(userWithPermissions('ativo', 'reports.create'))
+        ->get(route('report.compliance'))
+        ->assertSee('id="report-back" href="'.route('certificate.index').'"', false);
 });

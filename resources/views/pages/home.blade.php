@@ -11,8 +11,8 @@
                 </div>
                 Gestão SST
             </div>
-            <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="btn btn-secondary">
-                {{ auth()->check() ? 'Ir para o painel' : 'Entrar' }}
+            <a href="{{ auth()->check() ? route('employees.index') : route('login') }}" class="btn btn-secondary">
+                {{ auth()->check() ? 'Ir para o sistema' : 'Entrar' }}
             </a>
         </header>
 
